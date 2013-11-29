@@ -31,6 +31,12 @@ public class ValidationResult<T> {
         isValid = valid;
     }
 
+    /**
+     * Returns the data associated with the validation.  The presence of data does not imply anything about
+     * the success or failure of the validation.
+     *
+     * @return The data associated with the validation.
+     */
     public T getData() {
         return data;
     }

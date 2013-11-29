@@ -80,7 +80,7 @@ public class ServerConfigTest {
             .setProductType(productType)
             .build();
 
-        assertTrue(serverConfig.validate(aciService, null));
+        assertTrue(serverConfig.validate(aciService, null).isValid());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class ServerConfigTest {
             .setIndexErrorMessage(indexErrorMessage)
             .build();
 
-        assertTrue(serverConfig.validate(aciService, indexingService));
+        assertTrue(serverConfig.validate(aciService, indexingService).isValid());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class ServerConfigTest {
             .setIndexErrorMessage("Bad command or file name")
             .build();
 
-        assertFalse(serverConfig.validate(aciService, indexingService));
+        assertFalse(serverConfig.validate(aciService, indexingService).isValid());
     }
 
     @Test
@@ -183,7 +183,7 @@ public class ServerConfigTest {
             .setProductType("IDOLSAAS")
             .build();
 
-        assertFalse(serverConfig.validate(aciService, null));
+        assertFalse(serverConfig.validate(aciService, null).isValid());
     }
 
     @Test
@@ -211,7 +211,7 @@ public class ServerConfigTest {
             .setProductType(productType)
             .build();
 
-        assertFalse(serverConfig.validate(aciService, null));
+        assertFalse(serverConfig.validate(aciService, null).isValid());
     }
 
     @Test
@@ -241,7 +241,7 @@ public class ServerConfigTest {
             .setIndexErrorMessage(indexErrorMessage)
             .build();
 
-        assertFalse(serverConfig.validate(aciService, indexingService));
+        assertFalse(serverConfig.validate(aciService, indexingService).isValid());
     }
 
     @Test
@@ -252,7 +252,7 @@ public class ServerConfigTest {
             .setProductType("IDOLSAAS")
             .build();
 
-        assertFalse(serverConfig.validate(aciService, null));
+        assertFalse(serverConfig.validate(aciService, null).isValid());
     }
 
     @Test
@@ -263,7 +263,7 @@ public class ServerConfigTest {
             .setProductType("IDOLSAAS")
             .build();
 
-        assertFalse(serverConfig.validate(aciService, null));
+        assertFalse(serverConfig.validate(aciService, null).isValid());
     }
 
     static class IsAciParameter extends ArgumentMatcher<AciParameter> {

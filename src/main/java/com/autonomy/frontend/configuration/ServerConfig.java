@@ -221,42 +221,56 @@ public class ServerConfig implements ConfigurationComponent {
 
     /**
      * Validates that the required settings are supplied and that the target server is responding
-     * @param aciService The {@link AciService} to use for validation
-     * @param indexingService The {@link IndexingService} to use for validation. If the server does not support indexing
+     *
+     * @param aciService The {@link com.autonomy.aci.client.services.AciService} to use for validation
+     * @param indexingService The {@link com.autonomy.nonaci.indexing.IndexingService} to use for validation. If the server does not support indexing
      *                        this may be null
      * @return true if the server is valid; false otherwise
      */
-    public boolean validate(final AciService aciService, final IndexingService indexingService) {
+    public ValidationResult<?> validate(final AciService aciService, final IndexingService indexingService) {
         // if the host is blank further testing is futile
         try {
             // string doesn't matter here as we swallow the exception
             basicValidate(null);
         }
         catch(ConfigException e) {
-            return false;
+            return new ValidationResult<>(false, "One or more of the required field is missing");
+        }
+
+
+        final boolean isCorrectVersion;
+
+        try {
+            isCorrectVersion = testServerVersion(aciService);
+        }
+        catch(RuntimeException e) {
+            LOGGER.debug("Error validating server version for {}", this.productType);
+            LOGGER.debug("", e);
+            return new ValidationResult<>(false, "An error occurred contacting the ACI server");
+        }
+
+        if(!isCorrectVersion) {
+            return new ValidationResult<>(false, "Incorrect server type.  " +
+                "Make sure you are using a " + productType);
         }
 
         try {
-            final boolean isCorrectVersion = testServerVersion(aciService);
-
-            if(!isCorrectVersion) {
-                return false;
-            }
-
             final ServerConfig serverConfig = fetchServerDetails(aciService, indexingService);
 
             final boolean result = serverConfig.getServicePort() > 0;
 
             if(this.indexErrorMessage == null) {
-                return result;
+                return new ValidationResult<>(result, "The server's service port could not be determined");
             }
             else {
-                return result && serverConfig.getIndexPort() > 0;
+                return new ValidationResult<>(result && serverConfig.getIndexPort() > 0,
+                    "The server's service or index ports could not be determined");
             }
 
         } catch (final RuntimeException e) {
             LOGGER.debug("Error validating config", e);
-            return false;
+            return new ValidationResult<>(false, "An error occurred " +
+                "fetching the details of the server's index and service ports");
         }
     }
 
@@ -268,22 +282,16 @@ public class ServerConfig implements ConfigurationComponent {
     public boolean basicValidate(final String component) throws ConfigException  {
         if(this.getPort() <= 0 || StringUtils.isBlank(this.getHost())){
             throw new ConfigException(component,
-                component + "attributes have not been defined in the config file. Please specify them in the config file");
+                component + " attributes have not been defined.");
         }
 
         return true;
     }
 
     private boolean testServerVersion(final AciService aciService) {
-        try {
-            // Community's ProductName is just IDOL, so we need to check the product type
-            final Version version = aciService.executeAction(toAciServerDetails(), new AciParameters("getversion"), new GetVersionProcessor());
-            return version.getProductTypes().contains(this.productType);
-        } catch (RuntimeException e) {
-            LOGGER.debug("Error validating server version for {}", this.productType);
-            LOGGER.debug("", e);
-            return false;
-        }
+        // Community's ProductName is just IDOL, so we need to check the product type
+        final Version version = aciService.executeAction(toAciServerDetails(), new AciParameters("getversion"), new GetVersionProcessor());
+        return version.getProductTypes().contains(this.productType);
     }
 
     /**

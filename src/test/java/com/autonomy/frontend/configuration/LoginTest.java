@@ -5,12 +5,12 @@ import com.autonomy.aci.client.transport.AciServerDetails;
 import com.autonomy.nonaci.indexing.IndexingService;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class LoginTest {
 	
@@ -104,18 +104,18 @@ public class LoginTest {
     @Test
     public void testValidateWithValidCommunity() {
         final ServerConfig community = mock(ServerConfig.class);
-        when(community.validate(any(AciService.class), any(IndexingService.class))).thenReturn(true);
+        Mockito.<ValidationResult<?>>when(community.validate(any(AciService.class), any(IndexingService.class))).thenReturn(new ValidationResult<>(true));
 
         final Login login = new Login.Builder().setCommunity(community).build();
-        assertTrue(login.validate(null));
+        assertTrue(login.validate(null).isValid());
     }
 
     @Test
     public void testValidateWithInvalidCommunity() {
         final ServerConfig community = mock(ServerConfig.class);
-        when(community.validate(any(AciService.class), any(IndexingService.class))).thenReturn(false);
+        Mockito.<ValidationResult<?>>when(community.validate(any(AciService.class), any(IndexingService.class))).thenReturn(new ValidationResult<>(false));
 
         final Login login = new Login.Builder().setCommunity(community).build();
-        assertFalse(login.validate(null));
+        assertFalse(login.validate(null).isValid());
     }
 }

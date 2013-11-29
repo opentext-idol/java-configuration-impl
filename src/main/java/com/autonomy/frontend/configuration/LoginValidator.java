@@ -11,7 +11,7 @@ import com.autonomy.aci.client.services.AciService;
  */
 
 /**
- * A validator for {@Login}
+ * A validator for {@link Login}
  */
 public class LoginValidator implements Validator<Login> {
 
@@ -19,7 +19,7 @@ public class LoginValidator implements Validator<Login> {
 
     @Override
     public ValidationResult<?> validate(final Login login) {
-        return new ValidationResult<Void>(login.validate(aciService));
+        return login.validate(aciService);
     }
 
     @Override

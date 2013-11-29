@@ -92,7 +92,7 @@ public class Login implements ConfigurationComponent {
         return RandomStringUtils.random(12, true, true);
     }
 
-    public boolean validate(final AciService aciService) {
+    public ValidationResult<?> validate(final AciService aciService) {
         return community.validate(aciService, null);
     }
 

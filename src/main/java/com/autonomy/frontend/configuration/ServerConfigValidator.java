@@ -35,7 +35,7 @@ public class ServerConfigValidator implements Validator<ServerConfig> {
 
     @Override
     public ValidationResult<?> validate(final ServerConfig config) {
-        return new ValidationResult<Void>(config.validate(aciService, indexingService));
+        return config.validate(aciService, indexingService);
     }
 
     @Override
