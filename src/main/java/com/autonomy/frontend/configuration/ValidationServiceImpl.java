@@ -28,7 +28,7 @@ public class ValidationServiceImpl<T extends Config<T>> implements ValidationSer
         if(configurationComponent instanceof ValidatingConfigurationComponent) {
             final ValidatingConfigurationComponent validatingComponent = (ValidatingConfigurationComponent) configurationComponent;
 
-            return new ValidationResult<Void>(validatingComponent.validate());
+            return validatingComponent.validate();
         }
         else {
             // getClass on a T returns a Class<T>

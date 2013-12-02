@@ -1,6 +1,7 @@
 package com.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,7 @@ public class ValidationResults {
     /**
      * @return true if every wrapped ValidationResult is valid; false otherwise
      */
+    @JsonIgnore
     public boolean isValid() {
         return valid;
     }

@@ -18,18 +18,16 @@ public class ConfigValidationException extends Exception {
 
     private static final long serialVersionUID = -8645510626116828438L;
 
-    private final Map<String, Boolean> validationErrors = new HashMap<>();
+    private final ValidationResults validationErrors;
 
     public ConfigValidationException(final ValidationResults validationErrors) {
-        for(final Map.Entry<String, ValidationResult<?>> entry : validationErrors.getMap().entrySet()) {
-            this.validationErrors.put(entry.getKey(), entry.getValue().isValid());
-        }
+        this.validationErrors = validationErrors;
     }
 
     /**
-     * @return A map from keys in the configuration to boolean; false means the section was invalid.
+     * @return The results of the validation failure that caused the exception
      */
-    public Map<String, Boolean> getValidationErrors() {
+    public ValidationResults getValidationErrors() {
         return validationErrors;
     }
 }

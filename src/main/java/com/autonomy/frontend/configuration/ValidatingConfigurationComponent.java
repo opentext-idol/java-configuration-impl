@@ -14,8 +14,8 @@ package com.autonomy.frontend.configuration;
 public interface ValidatingConfigurationComponent extends ConfigurationComponent {
 
     /**
-     * @return True if the component is valid; false otherwise
+     * @return A {@link ValidationResult} which is valid if the component is valid
      */
-    boolean validate();
+    ValidationResult<?> validate();
 
 }
