@@ -42,7 +42,7 @@ public class ServerConfig implements ConfigurationComponent {
     /**
      * The producttypecsv of the server, used for validation
      */
-    private final String productType;
+    private final ProductType productType;
 
     /**
      * The error message to expect when testing the index port of the server.  If not defined it is assumed that
@@ -251,7 +251,7 @@ public class ServerConfig implements ConfigurationComponent {
 
         if(!isCorrectVersion) {
             return new ValidationResult<>(false, "Incorrect server type.  " +
-                "Make sure you are using a " + productType);
+                "Make sure you are using a " + productType.getFriendlyName());
         }
 
         try {
@@ -291,7 +291,7 @@ public class ServerConfig implements ConfigurationComponent {
     private boolean testServerVersion(final AciService aciService) {
         // Community's ProductName is just IDOL, so we need to check the product type
         final Version version = aciService.executeAction(toAciServerDetails(), new AciParameters("getversion"), new GetVersionProcessor());
-        return version.getProductTypes().contains(this.productType);
+        return version.getProductTypes().contains(this.productType.name());
     }
 
     /**
@@ -319,7 +319,7 @@ public class ServerConfig implements ConfigurationComponent {
         private int port;
         private int indexPort;
         private int servicePort;
-        private String productType;
+        private ProductType productType;
         private String indexErrorMessage;
 
         public ServerConfig build() {

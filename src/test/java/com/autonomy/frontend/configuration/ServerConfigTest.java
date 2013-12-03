@@ -9,7 +9,6 @@ import com.autonomy.nonaci.ServerDetails;
 import com.autonomy.nonaci.indexing.IndexCommand;
 import com.autonomy.nonaci.indexing.IndexingException;
 import com.autonomy.nonaci.indexing.IndexingService;
-import com.autonomy.nonaci.indexing.impl.IndexCommandImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,9 +51,9 @@ public class ServerConfigTest {
 
     @Test
     public void testValidate() {
-        final String productType = "IDOLSASS";
+        final ProductType productType = ProductType.SERVICECOORDINATOR;
         final Version version = new Version();
-        version.setProductTypes(Collections.singleton(productType));
+        version.setProductTypes(Collections.singleton(productType.name()));
 
         when(aciService.executeAction(
             argThat(new IsAciServerDetails("example.com", 6666)),
@@ -86,10 +85,10 @@ public class ServerConfigTest {
     @Test
     public void testValidateWithIndexPort() {
         final String indexErrorMessage = "Bad command or file name";
-        final String productType = "INDEXINGMACHINE";
+        final ProductType productType = ProductType.AXE;
 
         final Version version = new Version();
-        version.setProductTypes(Collections.singleton(productType));
+        version.setProductTypes(Collections.singleton(productType.name()));
 
         when(aciService.executeAction(
             argThat(new IsAciServerDetails("example.com", 7666)),
@@ -126,10 +125,10 @@ public class ServerConfigTest {
 
     @Test
     public void testValidateWithIncorrectIndexErrorMessage() {
-        final String productType = "INDEXINGMACHINE";
+        final ProductType productType = ProductType.AXE;
 
         final Version version = new Version();
-        version.setProductTypes(Collections.singleton(productType));
+        version.setProductTypes(Collections.singleton(productType.name()));
 
         when(aciService.executeAction(
             argThat(new IsAciServerDetails("example.com", 7666)),
@@ -167,7 +166,7 @@ public class ServerConfigTest {
     @Test
     public void testValidateWithWrongVersion() {
         final Version version = new Version();
-        version.setProductTypes(Collections.singleton("IDOLSASS"));
+        version.setProductTypes(Collections.singleton(ProductType.UASERVER.name()));
 
         when(aciService.executeAction(
             argThat(new IsAciServerDetails("example.com", 6666)),
@@ -180,7 +179,7 @@ public class ServerConfigTest {
         final ServerConfig serverConfig = new ServerConfig.Builder()
             .setHost("example.com")
             .setPort(6666)
-            .setProductType("IDOLSAAS")
+            .setProductType(ProductType.AXE)
             .build();
 
         assertFalse(serverConfig.validate(aciService, null).isValid());
@@ -188,9 +187,9 @@ public class ServerConfigTest {
 
     @Test
     public void testValidateWithNoServicePort() {
-        final String productType = "IDOLSASS";
+        final ProductType productType = ProductType.SERVICECOORDINATOR;
         final Version version = new Version();
-        version.setProductTypes(Collections.singleton(productType));
+        version.setProductTypes(Collections.singleton(productType.name()));
 
         when(aciService.executeAction(
             argThat(new IsAciServerDetails("example.com", 6666)),
@@ -217,10 +216,10 @@ public class ServerConfigTest {
     @Test
     public void testValidateWithMissingIndexPort() {
         final String indexErrorMessage = "Bad command or file name";
-        final String productType = "INDEXINGMACHINE";
+        final ProductType productType = ProductType.AXE;
 
         final Version version = new Version();
-        version.setProductTypes(Collections.singleton(productType));
+        version.setProductTypes(Collections.singleton(productType.name()));
 
         when(aciService.executeAction(
             argThat(new IsAciServerDetails("example.com", 7666)),
@@ -249,7 +248,7 @@ public class ServerConfigTest {
         final ServerConfig serverConfig = new ServerConfig.Builder()
             .setHost("")
             .setPort(6666)
-            .setProductType("IDOLSAAS")
+            .setProductType(ProductType.SERVICECOORDINATOR)
             .build();
 
         assertFalse(serverConfig.validate(aciService, null).isValid());
@@ -260,7 +259,7 @@ public class ServerConfigTest {
         final ServerConfig serverConfig = new ServerConfig.Builder()
             .setHost("example.com")
             .setPort(0)
-            .setProductType("IDOLSAAS")
+            .setProductType(ProductType.SERVICECOORDINATOR)
             .build();
 
         assertFalse(serverConfig.validate(aciService, null).isValid());
