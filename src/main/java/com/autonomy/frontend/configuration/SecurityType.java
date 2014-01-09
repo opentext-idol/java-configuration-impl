@@ -16,7 +16,7 @@ import com.autonomy.aci.client.annotations.IdolField;
  *
  * This class is annotated for use with {@link com.autonomy.aci.client.annotations.IdolAnnotationsProcessorFactory}
  */
-@IdolDocument("securitytypes")
+@IdolDocument("securitytype")
 public class SecurityType {
 
 	private String name;
