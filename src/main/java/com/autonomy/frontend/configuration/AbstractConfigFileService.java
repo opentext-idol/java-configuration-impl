@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -155,7 +156,7 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
         final String propertyValue = System.getProperty(configFileLocation);
 
         if(propertyValue != null) {
-            return propertyValue + '/' + configFileName;
+            return propertyValue + File.separator + configFileName;
         } else {
             return null;
         }
