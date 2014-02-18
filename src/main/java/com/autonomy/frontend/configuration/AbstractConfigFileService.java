@@ -48,6 +48,8 @@ import org.springframework.core.io.ResourceLoader;
 public abstract class AbstractConfigFileService<T extends Config<T>> implements ConfigFileService<T>, ResourceLoaderAware {
 
     private String configFileLocation;
+    private String configFileName;
+
     private String defaultConfigFile;
 
     // Use AtomicReference for thread safety
@@ -150,7 +152,13 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
     }
 
     private String getConfigFileLocation() {
-        return System.getenv(configFileLocation);
+        final String propertyValue = System.getProperty(configFileLocation);
+
+        if(propertyValue != null) {
+            return propertyValue + '/' + configFileName;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -259,11 +267,18 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
     }
 
     /**
-     * @param environmentVariable The name of the environment variable which stores the location
+     * @param systemProperty The name of the system property which stores the location
      *                            of the config file.
      */
-    public void setConfigFileLocation(final String environmentVariable) {
-        this.configFileLocation = environmentVariable;
+    public void setConfigFileLocation(final String systemProperty) {
+        this.configFileLocation = systemProperty;
+    }
+
+    /**
+     * @param configFileName The name of the config file
+     */
+    public void setConfigFileName(final String configFileName) {
+        this.configFileName = configFileName;
     }
 
     /**
