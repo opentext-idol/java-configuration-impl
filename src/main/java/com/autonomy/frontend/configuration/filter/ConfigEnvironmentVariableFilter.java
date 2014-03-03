@@ -34,8 +34,16 @@ public class ConfigEnvironmentVariableFilter implements Filter {
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
         final HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        if(configService.getConfig() == null && !request.getRequestURI().equals(request.getContextPath() + configPage)) {
-            response.sendRedirect(request.getContextPath() + configPage);
+        final Object config = configService.getConfig();
+        final String contextPath = request.getContextPath();
+        final String configUri = contextPath + configPage;
+        final String requestUri = request.getRequestURI();
+
+        if(config == null && !requestUri.equals(configUri)) {
+            response.sendRedirect(configUri);
+        }
+        else if(config != null && requestUri.equals(configUri)) {
+            response.sendRedirect(contextPath);
         }
         else {
             filterChain.doFilter(servletRequest, servletResponse);
