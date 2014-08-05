@@ -20,4 +20,6 @@ public interface LoginConfig<T> {
 
     T generateDefaultLogin();
 
+    T withHashedPasswords();
+
 }

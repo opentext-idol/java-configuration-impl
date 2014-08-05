@@ -17,9 +17,11 @@ public class LoginValidator implements Validator<Login> {
 
     private AciService aciService;
 
+    private ConfigService<? extends LoginConfig<?>> configService;
+
     @Override
     public ValidationResult<?> validate(final Login login) {
-        return login.validate(aciService);
+        return login.validate(aciService, configService);
     }
 
     @Override
@@ -29,5 +31,9 @@ public class LoginValidator implements Validator<Login> {
 
     public void setAciService(final AciService aciService) {
         this.aciService = aciService;
+    }
+
+    public void setConfigService(final ConfigService<? extends LoginConfig<?>> configService) {
+        this.configService = configService;
     }
 }

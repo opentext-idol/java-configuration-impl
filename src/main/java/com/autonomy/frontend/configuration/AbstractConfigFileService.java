@@ -225,6 +225,7 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
 
             if(mergedConfig instanceof LoginConfig<?>) {
                 mergedConfig = ((LoginConfig<T>) mergedConfig).withoutDefaultLogin();
+                mergedConfig = ((LoginConfig<T>) mergedConfig).withHashedPasswords();
             }
 
             this.config.set(mergedConfig);
@@ -245,8 +246,10 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
 
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFileLocation), "UTF-8"));
 
+            // TODO: This scales badly and needs rethinking
             if(filterProvider != null) {
                 mapper.addMixInAnnotations(ServerConfig.class, ConfigurationFilterMixin.class);
+                mapper.addMixInAnnotations(BCryptUsernameAndPassword.class, ConfigurationFilterMixin.class);
                 mapper.writer(filterProvider).writeValue(writer, configToWrite);
             }
             else {

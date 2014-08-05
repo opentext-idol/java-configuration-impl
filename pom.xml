@@ -56,6 +56,11 @@
             <version>1.9.0</version>
         </dependency>
         <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.3m</version>
+        </dependency>
+        <dependency>
             <groupId>com.autonomy.aci.client</groupId>
             <artifactId>autonomy-aci-annotations-processor</artifactId>
             <version>1.0.1</version>

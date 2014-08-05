@@ -42,12 +42,14 @@ public class Login implements ConfigurationComponent {
      */
     private final UsernameAndPassword defaultLogin;
     private final ServerConfig community;
+    private final BCryptUsernameAndPassword singleUser;
 
     private Login(final Builder builder) {
         this.method = builder.method;
         this.cas = builder.cas;
         this.defaultLogin = builder.defaultLogin;
         this.community = builder.community;
+        this.singleUser = builder.singleUser;
     }
 
     public Login merge(final Login login)  {
@@ -58,6 +60,7 @@ public class Login implements ConfigurationComponent {
             builder.setCas(this.cas == null ? login.cas : this.cas.merge(login.cas));
             builder.setDefaultLogin(this.defaultLogin == null ? login.defaultLogin : this.defaultLogin.merge(login.defaultLogin));
             builder.setCommunity(this.community == null ? login.community : this.community.merge(login.community));
+            builder.setSingleUser(this.singleUser == null ? login.singleUser : this.singleUser.merge(login.singleUser));
 
             return builder.build();
         }
@@ -88,31 +91,45 @@ public class Login implements ConfigurationComponent {
         return builder.build();
     }
 
+    public Login withHashedPasswords() {
+        final Builder builder = new Builder(this);
+
+        builder.singleUser = singleUser.withHashedPassword();
+
+        return builder.build();
+    }
+
     private String generatePassword() {
         return RandomStringUtils.random(12, true, true);
     }
 
-    public ValidationResult<?> validate(final AciService aciService) {
+    public ValidationResult<?> validate(final AciService aciService, final ConfigService<? extends LoginConfig<?>> configService) {
+        if(method.equalsIgnoreCase(LoginTypes.SINGLE_USER)) {
+            return singleUser.validate(configService);
+        }
+
         return community.validate(aciService, null);
     }
 
-	public void basicValidate() throws ConfigException {
-        if(this.method.equalsIgnoreCase("cas")){
-			this.validateCAS();
-		}
+    public void basicValidate() throws ConfigException {
+        if(this.method.equalsIgnoreCase(LoginTypes.CAS)){
+            this.validateCAS();
+        }
+        else if(this.method.equalsIgnoreCase(LoginTypes.SINGLE_USER)) {
+            this.singleUser.basicValidate();
+        }
+        else if(!this.method.equalsIgnoreCase(LoginTypes.DEFAULT)){
+            this.community.basicValidate("Community");
+        }
+    }
 
-		if(!this.method.equalsIgnoreCase("default")){
-			this.community.basicValidate("Community");
-		}
-	}
-
-	private void validateCAS() throws ConfigException {
-		if(this.cas == null ||  StringUtils.isBlank(this.cas.getCasServerLoginUrl()) ||
-				StringUtils.isBlank(this.cas.getCasServerUrlPrefix()) || StringUtils.isBlank(this.cas.getServerName())){
-			throw new ConfigException("Login",
-					"CAS attributes have not been defined in the config file. Please specify them in the config file");
-		}
-	}
+    private void validateCAS() throws ConfigException {
+        if(this.cas == null ||  StringUtils.isBlank(this.cas.getCasServerLoginUrl()) ||
+            StringUtils.isBlank(this.cas.getCasServerUrlPrefix()) || StringUtils.isBlank(this.cas.getServerName())){
+            throw new ConfigException("Login",
+                "CAS attributes have not been defined in the config file. Please specify them in the config file");
+        }
+    }
 
     @Override
     @JsonIgnore
@@ -127,6 +144,7 @@ public class Login implements ConfigurationComponent {
         private CasConfig cas;
         private UsernameAndPassword defaultLogin;
         private ServerConfig community;
+        private BCryptUsernameAndPassword singleUser;
 
         public Builder() {}
 
@@ -135,6 +153,7 @@ public class Login implements ConfigurationComponent {
             this.cas = login.cas;
             this.defaultLogin = login.defaultLogin;
             this.community = login.community;
+            this.singleUser = login.singleUser;
         }
 
         public Builder setCas(final CasConfig casConfig) {
@@ -154,6 +173,11 @@ public class Login implements ConfigurationComponent {
 
         public Builder setMethod(final String method) {
             this.method = method;
+            return this;
+        }
+
+        public Builder setSingleUser(final BCryptUsernameAndPassword singleUser) {
+            this.singleUser = singleUser;
             return this;
         }
 
