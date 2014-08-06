@@ -94,7 +94,19 @@ public class Login implements ConfigurationComponent {
     public Login withHashedPasswords() {
         final Builder builder = new Builder(this);
 
-        builder.singleUser = singleUser.withHashedPassword();
+        if(singleUser != null) {
+            builder.singleUser = singleUser.withHashedPassword();
+        }
+
+        return builder.build();
+    }
+
+    public Login withoutPasswords() {
+        final Builder builder = new Builder(this);
+
+        if(singleUser != null) {
+            builder.singleUser = singleUser.withoutPasswords();
+        }
 
         return builder.build();
     }

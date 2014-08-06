@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
-import org.jasypt.util.text.TextEncryptor;
 import org.mindrot.jbcrypt.BCrypt;
 
 /*
@@ -19,7 +18,7 @@ import org.mindrot.jbcrypt.BCrypt;
 @Getter
 @EqualsAndHashCode
 @JsonDeserialize(builder = BCryptUsernameAndPassword.Builder.class)
-public class BCryptUsernameAndPassword implements ConfigurationComponent, PasswordsConfig<BCryptUsernameAndPassword> {
+public class BCryptUsernameAndPassword implements ConfigurationComponent {
 
     private static final int BCRYPT_HASHING_ROUNDS = 10;
 
@@ -96,7 +95,6 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent, Passwo
         return new ValidationResult<>(valid);
     }
 
-    @Override
     public BCryptUsernameAndPassword withoutPasswords() {
         final Builder builder = new Builder(this);
 
@@ -104,16 +102,6 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent, Passwo
         builder.hashedPassword = "";
 
         return builder.build();
-    }
-
-    @Override
-    public BCryptUsernameAndPassword withEncryptedPasswords(final TextEncryptor encryptor) {
-        return this;
-    }
-
-    @Override
-    public BCryptUsernameAndPassword withDecryptedPasswords(final TextEncryptor encryptor) {
-        return this;
     }
 
     @JsonPOJOBuilder(withPrefix = "set")
