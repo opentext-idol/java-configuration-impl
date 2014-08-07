@@ -26,12 +26,14 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
     private final String currentPassword;
     private final String plaintextPassword;
     private final String hashedPassword;
+    private final boolean passwordRedacted;
 
     private BCryptUsernameAndPassword(final Builder builder) {
         this.username = builder.username;
         this.currentPassword = builder.currentPassword;
         this.plaintextPassword = builder.plaintextPassword;
         this.hashedPassword = builder.hashedPassword;
+        this.passwordRedacted = builder.passwordRedacted;
     }
 
     public BCryptUsernameAndPassword merge(final BCryptUsernameAndPassword usernameAndPassword) {
@@ -39,9 +41,10 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
             final Builder builder = new Builder();
 
             builder.setUsername(username == null ? usernameAndPassword.username : username);
-            builder.setHashedPassword(hashedPassword == null ? usernameAndPassword.hashedPassword : this.hashedPassword);
-            builder.setCurrentPassword(currentPassword == null ? usernameAndPassword.currentPassword : this.currentPassword);
-            builder.setPlaintextPassword(plaintextPassword == null ? usernameAndPassword.plaintextPassword : this.plaintextPassword);
+            builder.setHashedPassword(passwordRedacted || hashedPassword == null ? usernameAndPassword.hashedPassword : this.hashedPassword);
+            builder.setCurrentPassword(passwordRedacted || currentPassword == null ? usernameAndPassword.currentPassword : this.currentPassword);
+            builder.setPlaintextPassword(passwordRedacted || plaintextPassword == null ? usernameAndPassword.plaintextPassword : this.plaintextPassword);
+            builder.setPasswordRedacted(false);
 
             return builder.build();
         }
@@ -59,12 +62,10 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         final Builder builder = new Builder(this);
 
         builder.setPlaintextPassword(null);
+        builder.setCurrentPassword(null);
 
-        if(StringUtils.isNotBlank(plaintextPassword)) {
+        if(hashedPassword != null && StringUtils.isNotBlank(plaintextPassword)) {
             builder.setHashedPassword(BCrypt.hashpw(plaintextPassword, BCrypt.gensalt(BCRYPT_HASHING_ROUNDS)));
-        }
-        else {
-            builder.setHashedPassword("");
         }
 
         return builder.build();
@@ -74,7 +75,11 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         return username != null;
     }
 
-    public ValidationResult<Void> validate(final ConfigService<? extends LoginConfig<?>> configService) {
+    public ValidationResult<?> validate(final ConfigService<? extends LoginConfig<?>> configService) {
+        if(passwordRedacted) {
+            return new ValidationResult<>(true);
+        }
+
         final Login login = configService.getConfig().getLogin();
 
         final BCryptUsernameAndPassword existingSingleUser = login.getSingleUser();
@@ -85,21 +90,24 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         if(defaultLogin != null) {
             valid = currentPassword.equals(defaultLogin.getPassword());
         }
-        else if(existingSingleUser == null || StringUtils.isEmpty(existingSingleUser.getHashedPassword())) {
-            valid = true;
-        }
         else {
-            valid = BCrypt.checkpw(currentPassword, existingSingleUser.getHashedPassword());
+            valid = BCrypt.checkpw(currentPassword, existingSingleUser.hashedPassword);
         }
 
-        return new ValidationResult<>(valid);
+        if(valid) {
+            return new ValidationResult<>(true);
+        }
+        else {
+            return new ValidationResult<>(false, "The current password is incorrect");
+        }
     }
 
     public BCryptUsernameAndPassword withoutPasswords() {
         final Builder builder = new Builder(this);
 
-        builder.plaintextPassword = "";
-        builder.hashedPassword = "";
+        builder.plaintextPassword = null;
+        builder.hashedPassword = null;
+        builder.passwordRedacted = true;
 
         return builder.build();
     }
@@ -108,9 +116,10 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
     @Setter
     public static class Builder {
         private String username;
-        private String currentPassword = "";
+        private String currentPassword;
         private String plaintextPassword;
         private String hashedPassword;
+        private boolean passwordRedacted;
 
         public Builder() {}
 
