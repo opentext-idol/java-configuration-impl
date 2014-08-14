@@ -20,10 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.util.text.TextEncryptor;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.context.ResourceLoaderAware;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 
 /*
  * $Id$
@@ -46,7 +42,7 @@ import org.springframework.core.io.ResourceLoader;
  *           login will be generated for the initial config file, and which will be removed on subsequent writes.
  */
 @Slf4j
-public abstract class AbstractConfigFileService<T extends Config<T>> implements ConfigFileService<T>, ResourceLoaderAware {
+public abstract class AbstractConfigFileService<T extends Config<T>> implements ConfigFileService<T> {
 
     private String configFileLocation;
     private String configFileName;
@@ -55,8 +51,6 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
 
     // Use AtomicReference for thread safety
     private final AtomicReference<T> config = new AtomicReference<>(null);
-
-	private ResourceLoader resourceLoader;
 
     private ObjectMapper mapper;
 
@@ -71,7 +65,7 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
     /**
      * Initialises the service.
      *
-     * @throws BeanInitializationException If an error occurs which prevent bean initialization
+     * @throws IllegalStateException If an error occurs which prevent bean initialization
      * @throws Exception If an unspecified error occurs
      */
 	// Exception thrown by method in library
@@ -100,17 +94,13 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
                 AbstractConfigFileService.log.error("Error reading config file at {}", configFileLocation);
                 AbstractConfigFileService.log.error("Recording stack trace", e);
                 // throw this so we don't continue to start the webapp
-                throw new BeanInitializationException("Could not initialize configuration", e);
+                throw new IllegalStateException("Could not initialize configuration", e);
             }
             finally {
                 IOUtils.closeQuietly(reader);
             }
 
-            final Resource defaultConfigResource = resourceLoader.getResource(defaultConfigFile);
-            InputStream defaultConfigInputStream = null;
-
-            try {
-                defaultConfigInputStream = defaultConfigResource.getInputStream();
+            try (InputStream defaultConfigInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(defaultConfigFile)){
                 final T defaultConfig = mapper.readValue(defaultConfigInputStream, getConfigClass());
 
                 T mergedConfig = fileConfig.merge(defaultConfig);
@@ -124,7 +114,7 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
                         writeOutConfigFile(mergedConfig, configFileLocation);
                     }
                     catch(IOException e) {
-                        throw new BeanInitializationException("Could not initialize configuration", e);
+                        throw new IllegalStateException("Could not initialize configuration", e);
                     }
                 }
 
@@ -136,14 +126,11 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
             catch(IOException e) {
                 AbstractConfigFileService.log.error("Error reading default config file", e);
                 // throw this so we don't continue to start the webapp
-                throw new BeanInitializationException("Could not initialize configuration", e);
+                throw new IllegalStateException("Could not initialize configuration", e);
             }
             catch(ConfigException e){
             	AbstractConfigFileService.log.error("Config validation failed in " + e);
-            	throw new BeanInitializationException("Could not initialize configuration", e);
-            }
-            finally {
-                IOUtils.closeQuietly(defaultConfigInputStream);
+            	throw new IllegalStateException("Could not initialize configuration", e);
             }
         }
         else {
@@ -265,11 +252,6 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
         }
     }
 
-    @Override
-    public void setResourceLoader(final ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
-
     /**
      * @param systemProperty The name of the system property which stores the location
      *                            of the config file.
@@ -286,8 +268,9 @@ public abstract class AbstractConfigFileService<T extends Config<T>> implements 
     }
 
     /**
-     * @param defaultConfigFile The path to the default config file.
-     *                          Accepts anything accepted by a {@link ResourceLoader}
+     * @param defaultConfigFile The path to the default config file. This should be a resource on the classpath e.g
+     *                          com/example/foo/defaultConfigFile.json
+     *
      */
     public void setDefaultConfigFile(final String defaultConfigFile) {
         this.defaultConfigFile = defaultConfigFile;
