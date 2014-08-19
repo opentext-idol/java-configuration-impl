@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -20,7 +21,7 @@ import org.mindrot.jbcrypt.BCrypt;
 @JsonDeserialize(builder = BCryptUsernameAndPassword.Builder.class)
 public class BCryptUsernameAndPassword implements ConfigurationComponent {
 
-    private static final int BCRYPT_HASHING_ROUNDS = 10;
+    private static final int BCRYPT_LOG_HASHING_ROUNDS = 10;
 
     private final String username;
     private final String currentPassword;
@@ -65,7 +66,7 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         builder.setCurrentPassword(null);
 
         if(hashedPassword != null && StringUtils.isNotBlank(plaintextPassword)) {
-            builder.setHashedPassword(BCrypt.hashpw(plaintextPassword, BCrypt.gensalt(BCRYPT_HASHING_ROUNDS)));
+            builder.setHashedPassword(BCrypt.hashpw(plaintextPassword, BCrypt.gensalt(BCRYPT_LOG_HASHING_ROUNDS)));
         }
 
         return builder.build();
@@ -75,12 +76,12 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         return username != null;
     }
 
-    public ValidationResult<?> validate(final ConfigService<? extends LoginConfig<?>> configService) {
+    public ValidationResult<?> validate(final ConfigService<? extends AuthenticationConfig<? extends SingleUserAuthentication,?>> configService) {
         if(passwordRedacted) {
             return new ValidationResult<>(true);
         }
 
-        final Login login = configService.getConfig().getLogin();
+        final SingleUserAuthentication login = configService.getConfig().getAuthentication();
 
         final BCryptUsernameAndPassword existingSingleUser = login.getSingleUser();
         final UsernameAndPassword defaultLogin = login.getDefaultLogin();
@@ -114,6 +115,7 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
 
     @JsonPOJOBuilder(withPrefix = "set")
     @Setter
+    @Accessors(chain = true)
     public static class Builder {
         private String username;
         private String currentPassword;

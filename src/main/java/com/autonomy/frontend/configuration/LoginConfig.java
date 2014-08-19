@@ -11,7 +11,9 @@ package com.autonomy.frontend.configuration;
 /**
  * Interface representing a config that contains a {@link Login}
  * @param <T> The type of the config.
+ * @deprecated Use {@link AuthenticationConfig} instead
  */
+@Deprecated
 public interface LoginConfig<T> {
 
     Login getLogin();

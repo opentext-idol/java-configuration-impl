@@ -12,16 +12,17 @@ import com.autonomy.aci.client.services.AciService;
 
 /**
  * A validator for {@link Login}
+ *
+ * @deprecated Use a {@link Validator} of your {@link Authentication} type instead
  */
+@Deprecated
 public class LoginValidator implements Validator<Login> {
 
     private AciService aciService;
 
-    private ConfigService<? extends LoginConfig<?>> configService;
-
     @Override
     public ValidationResult<?> validate(final Login login) {
-        return login.validate(aciService, configService);
+        return login.validate(aciService);
     }
 
     @Override
@@ -31,9 +32,5 @@ public class LoginValidator implements Validator<Login> {
 
     public void setAciService(final AciService aciService) {
         this.aciService = aciService;
-    }
-
-    public void setConfigService(final ConfigService<? extends LoginConfig<?>> configService) {
-        this.configService = configService;
     }
 }

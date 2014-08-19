@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.commons.lang.StringUtils;
 
 /*
  * $Id$
@@ -42,6 +43,14 @@ public class CasConfig {
         }
         else {
             return this;
+        }
+    }
+
+    public void basicValidate() throws ConfigException {
+        if(StringUtils.isBlank(this.getCasServerLoginUrl())
+                || StringUtils.isBlank(this.getCasServerUrlPrefix())
+                || StringUtils.isBlank(this.getServerName())){
+            throw new ConfigException("Login", "CAS attributes have not been defined in the config file. Please specify them in the config file");
         }
     }
 

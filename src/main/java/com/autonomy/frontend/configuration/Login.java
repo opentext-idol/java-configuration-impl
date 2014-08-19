@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.StringUtils;
 
 /*
  * $Id$
@@ -19,11 +18,13 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Configuration for Login options - how to authenticate and the location of community
+ * @deprecated Use {@link Authentication} instead
  */
 @JsonDeserialize(builder = Login.Builder.class)
 @Getter
 @EqualsAndHashCode
-public class Login implements ConfigurationComponent {
+@Deprecated
+public class Login implements Authentication<Login> {
 
     /**
      * The authentication method. This should be either a community security type, or the special values "cas" (use
@@ -42,25 +43,23 @@ public class Login implements ConfigurationComponent {
      */
     private final UsernameAndPassword defaultLogin;
     private final ServerConfig community;
-    private final BCryptUsernameAndPassword singleUser;
 
     private Login(final Builder builder) {
         this.method = builder.method;
         this.cas = builder.cas;
         this.defaultLogin = builder.defaultLogin;
         this.community = builder.community;
-        this.singleUser = builder.singleUser;
     }
 
+    @Override
     public Login merge(final Login login)  {
         if(login != null) {
             final Builder builder = new Builder();
 
-            builder.setMethod(this.method == null ? login.method: this.method);
+            builder.setMethod(this.method == null ? login.method : this.method);
             builder.setCas(this.cas == null ? login.cas : this.cas.merge(login.cas));
             builder.setDefaultLogin(this.defaultLogin == null ? login.defaultLogin : this.defaultLogin.merge(login.defaultLogin));
             builder.setCommunity(this.community == null ? login.community : this.community.merge(login.community));
-            builder.setSingleUser(this.singleUser == null ? login.singleUser : this.singleUser.merge(login.singleUser));
 
             return builder.build();
         }
@@ -72,6 +71,7 @@ public class Login implements ConfigurationComponent {
     /**
      * @return A new Login without a default login.
      */
+    @Override
     public Login withoutDefaultLogin() {
         final Builder builder = new Builder(this);
 
@@ -83,6 +83,7 @@ public class Login implements ConfigurationComponent {
     /**
      * @return A new Login with a default username and password
      */
+    @Override
     public Login generateDefaultLogin() {
         final Builder builder = new Builder(this);
 
@@ -91,55 +92,31 @@ public class Login implements ConfigurationComponent {
         return builder.build();
     }
 
+    @Override
     public Login withHashedPasswords() {
-        final Builder builder = new Builder(this);
-
-        if(singleUser != null) {
-            builder.singleUser = singleUser.withHashedPassword();
-        }
-
-        return builder.build();
+        return this;
     }
 
+    @Override
     public Login withoutPasswords() {
-        final Builder builder = new Builder(this);
-
-        if(singleUser != null) {
-            builder.singleUser = singleUser.withoutPasswords();
-        }
-
-        return builder.build();
+        return this;
     }
 
     private String generatePassword() {
         return RandomStringUtils.random(12, true, true);
     }
 
-    public ValidationResult<?> validate(final AciService aciService, final ConfigService<? extends LoginConfig<?>> configService) {
-        if(method.equalsIgnoreCase(LoginTypes.SINGLE_USER)) {
-            return singleUser.validate(configService);
-        }
-
+    public ValidationResult<?> validate(final AciService aciService) {
         return community.validate(aciService, null);
     }
 
+    @Override
     public void basicValidate() throws ConfigException {
         if(this.method.equalsIgnoreCase(LoginTypes.CAS)){
-            this.validateCAS();
-        }
-        else if(this.method.equalsIgnoreCase(LoginTypes.SINGLE_USER)) {
-            this.singleUser.basicValidate();
+            this.cas.basicValidate();
         }
         else if(!this.method.equalsIgnoreCase(LoginTypes.DEFAULT)){
             this.community.basicValidate("Community");
-        }
-    }
-
-    private void validateCAS() throws ConfigException {
-        if(this.cas == null ||  StringUtils.isBlank(this.cas.getCasServerLoginUrl()) ||
-            StringUtils.isBlank(this.cas.getCasServerUrlPrefix()) || StringUtils.isBlank(this.cas.getServerName())){
-            throw new ConfigException("Login",
-                "CAS attributes have not been defined in the config file. Please specify them in the config file");
         }
     }
 
@@ -149,6 +126,11 @@ public class Login implements ConfigurationComponent {
         return true;
     }
 
+    @Override
+    public String getClassName() {
+        return getClass().getCanonicalName();
+    }
+
     @JsonPOJOBuilder(withPrefix = "set")
     public static class Builder {
 
@@ -156,7 +138,6 @@ public class Login implements ConfigurationComponent {
         private CasConfig cas;
         private UsernameAndPassword defaultLogin;
         private ServerConfig community;
-        private BCryptUsernameAndPassword singleUser;
 
         public Builder() {}
 
@@ -165,7 +146,6 @@ public class Login implements ConfigurationComponent {
             this.cas = login.cas;
             this.defaultLogin = login.defaultLogin;
             this.community = login.community;
-            this.singleUser = login.singleUser;
         }
 
         public Builder setCas(final CasConfig casConfig) {
@@ -185,11 +165,6 @@ public class Login implements ConfigurationComponent {
 
         public Builder setMethod(final String method) {
             this.method = method;
-            return this;
-        }
-
-        public Builder setSingleUser(final BCryptUsernameAndPassword singleUser) {
-            this.singleUser = singleUser;
             return this;
         }
 

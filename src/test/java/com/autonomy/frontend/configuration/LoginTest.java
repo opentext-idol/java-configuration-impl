@@ -107,7 +107,7 @@ public class LoginTest {
         Mockito.<ValidationResult<?>>when(community.validate(any(AciService.class), any(IndexingService.class))).thenReturn(new ValidationResult<>(true));
 
         final Login login = new Login.Builder().setMethod("autonomy").setCommunity(community).build();
-        assertTrue(login.validate(null, null).isValid());
+        assertTrue(login.validate(null).isValid());
     }
 
     @Test
@@ -116,6 +116,6 @@ public class LoginTest {
         Mockito.<ValidationResult<?>>when(community.validate(any(AciService.class), any(IndexingService.class))).thenReturn(new ValidationResult<>(false));
 
         final Login login = new Login.Builder().setMethod("autonomy").setCommunity(community).build();
-        assertFalse(login.validate(null, null).isValid());
+        assertFalse(login.validate(null).isValid());
     }
 }
