@@ -7,14 +7,8 @@ package com.autonomy.frontend.configuration;
  *
  * Last modified by $Author:$ on $Date:$
  */
-public interface AuthenticationConfig<A extends Authentication<A>, T extends AuthenticationConfig<A,T>> {
+public interface AuthenticationConfig<A extends Authentication<A>, T extends AuthenticationConfig<A,T>> extends AuthenticatingConfig<T> {
 
     A getAuthentication();
-
-    T withoutDefaultLogin();
-
-    T generateDefaultLogin();
-
-    T withHashedPasswords();
 
 }

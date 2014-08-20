@@ -14,14 +14,8 @@ package com.autonomy.frontend.configuration;
  * @deprecated Use {@link AuthenticationConfig} instead
  */
 @Deprecated
-public interface LoginConfig<T> {
+public interface LoginConfig<T> extends AuthenticatingConfig<T> {
 
     Login getLogin();
-
-    T withoutDefaultLogin();
-
-    T generateDefaultLogin();
-
-    T withHashedPasswords();
 
 }
