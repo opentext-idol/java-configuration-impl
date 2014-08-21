@@ -76,15 +76,10 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         return username != null;
     }
 
-    public ValidationResult<?> validate(final ConfigService<? extends AuthenticationConfig<? extends SingleUserAuthentication,?>> configService) {
+    public ValidationResult<?> validate(final BCryptUsernameAndPassword existingSingleUser, final UsernameAndPassword defaultLogin) {
         if(passwordRedacted) {
             return new ValidationResult<>(true);
         }
-
-        final SingleUserAuthentication login = configService.getConfig().getAuthentication();
-
-        final BCryptUsernameAndPassword existingSingleUser = login.getSingleUser();
-        final UsernameAndPassword defaultLogin = login.getDefaultLogin();
 
         final boolean valid;
 

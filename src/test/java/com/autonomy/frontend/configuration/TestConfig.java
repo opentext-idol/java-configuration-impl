@@ -9,28 +9,26 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  *
  * Last modified by $Author:$ on $Date:$
  */
-class TestConfig<T extends Authentication<T>> implements AuthenticationConfig<T, TestConfig<T>> {
-    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
+class TestConfig implements AuthenticationConfig<TestConfig> {
     private Authentication<?> authentication;
 
     @Override
-    public TestConfig<T> generateDefaultLogin() {
+    public TestConfig generateDefaultLogin() {
         return null;
     }
 
     @Override
-    public TestConfig<T> withHashedPasswords() {
+    public TestConfig withHashedPasswords() {
         return null;
     }
 
     @Override
-    public T getAuthentication() {
-        //noinspection unchecked
-        return (T) authentication;
+    public Authentication<?> getAuthentication() {
+        return authentication;
     }
 
     @Override
-    public TestConfig<T> withoutDefaultLogin() {
+    public TestConfig withoutDefaultLogin() {
         return null;
     }
 }

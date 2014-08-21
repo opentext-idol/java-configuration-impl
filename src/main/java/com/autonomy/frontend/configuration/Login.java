@@ -52,8 +52,10 @@ public class Login implements Authentication<Login> {
     }
 
     @Override
-    public Login merge(final Login login)  {
-        if(login != null) {
+    public Login merge(final Authentication<?> other)  {
+        if(other instanceof Login) {
+            final Login login = (Login) other;
+
             final Builder builder = new Builder();
 
             builder.setMethod(this.method == null ? login.method : this.method);
@@ -124,11 +126,6 @@ public class Login implements Authentication<Login> {
     @JsonIgnore
     public boolean isEnabled() {
         return true;
-    }
-
-    @Override
-    public String getClassName() {
-        return getClass().getCanonicalName();
     }
 
     @JsonPOJOBuilder(withPrefix = "set")

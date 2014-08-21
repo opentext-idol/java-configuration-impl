@@ -1,5 +1,6 @@
 package com.autonomy.frontend.configuration;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Data;
@@ -39,11 +40,6 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
     }
 
     @Override
-    public String getClassName() {
-        return getClass().getCanonicalName();
-    }
-
-    @Override
     public SingleUserAuthentication generateDefaultLogin() {
         final Builder builder = new Builder(this);
 
@@ -80,13 +76,15 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
     }
 
     @Override
-    public SingleUserAuthentication merge(final SingleUserAuthentication other) {
-        if(other != null) {
+    public SingleUserAuthentication merge(final Authentication<?> other) {
+        if(other instanceof SingleUserAuthentication) {
+            final SingleUserAuthentication castOther = (SingleUserAuthentication) other;
+
             final Builder builder = new Builder(this);
 
-            builder.setDefaultLogin(this.defaultLogin == null ? other.defaultLogin : this.defaultLogin.merge(other.defaultLogin));
-            builder.setSingleUser(this.singleUser == null ? other.singleUser : this.singleUser.merge(other.singleUser));
-            builder.setMethod(this.method == null ? other.method : this.method);
+            builder.setDefaultLogin(this.defaultLogin == null ? castOther.defaultLogin : this.defaultLogin.merge(castOther.defaultLogin));
+            builder.setSingleUser(this.singleUser == null ? castOther.singleUser : this.singleUser.merge(castOther.singleUser));
+            builder.setMethod(this.method == null ? castOther.method : this.method);
 
             return builder.build();
         }
@@ -107,14 +105,24 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
         return true;
     }
 
-    public ValidationResult<?> validate(final ConfigService<? extends AuthenticationConfig<? extends SingleUserAuthentication, ?>> configService) {
-        return singleUser.validate(configService);
+    public ValidationResult<?> validate(final ConfigService<? extends AuthenticationConfig<?>> configService) {
+        final Authentication<?> authentication = configService.getConfig().getAuthentication();
+
+        if(authentication instanceof SingleUserAuthentication) {
+            final SingleUserAuthentication current = (SingleUserAuthentication) authentication;
+            return singleUser.validate(current.getSingleUser(), getDefaultLogin());
+        }
+        else {
+            // TODO: should this be true? e.g. if switching authentication types
+            return new ValidationResult<>(false, "Type mismatch: SingleUserAuthentication not found");
+        }
     }
 
     @NoArgsConstructor
     @JsonPOJOBuilder(withPrefix = "set")
     @Setter
     @Accessors(chain = true)
+    @JsonIgnoreProperties({"cas", "community"}) // backwards compatibility
     public static class Builder {
 
         private DefaultLogin defaultLogin;

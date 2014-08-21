@@ -1,6 +1,7 @@
 package com.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Data;
@@ -30,13 +31,14 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
     }
 
     @Override
-    public CasAuthentication merge(final CasAuthentication other) {
-        if(other != null) {
+    public CasAuthentication merge(final Authentication<?> other) {
+        if(other instanceof CasAuthentication) {
+            final CasAuthentication castOther = (CasAuthentication) other;
             final Builder builder = new Builder(this);
 
-            builder.setDefaultLogin(this.defaultLogin == null ? other.defaultLogin : this.defaultLogin.merge(other.defaultLogin));
-            builder.setCas(this.cas == null ? other.cas : this.cas.merge(other.cas));
-            builder.setMethod(this.method == null ? other.method : this.method);
+            builder.setDefaultLogin(this.defaultLogin == null ? castOther.defaultLogin : this.defaultLogin.merge(castOther.defaultLogin));
+            builder.setCas(this.cas == null ? castOther.cas : this.cas.merge(castOther.cas));
+            builder.setMethod(this.method == null ? castOther.method : this.method);
 
             return builder.build();
         }
@@ -72,11 +74,6 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
         catch(ConfigException e) {
             return new ValidationResult<>(false, "");
         }
-    }
-
-    @Override
-    public String getClassName() {
-        return getClass().getCanonicalName();
     }
 
     @Override
@@ -117,6 +114,7 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
     @JsonPOJOBuilder(withPrefix = "set")
     @Accessors(chain = true)
     @Setter
+    @JsonIgnoreProperties({"singleUser", "community"}) // backwards compatibility
     public static class Builder {
 
         private CasConfig cas;

@@ -1,5 +1,7 @@
 package com.autonomy.frontend.configuration;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /*
  * $Id:$
  *
@@ -7,16 +9,12 @@ package com.autonomy.frontend.configuration;
  *
  * Last modified by $Author:$ on $Date:$
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
 public interface Authentication<T extends Authentication<T>> extends ConfigurationComponent {
 
     String getMethod();
 
     UsernameAndPassword getDefaultLogin();
-
-    /**
-     * @return The fully qualified name of the class for use with {@link com.fasterxml.jackson.annotation.JsonTypeInfo}
-     */
-    String getClassName();
 
     T generateDefaultLogin();
 
@@ -26,7 +24,7 @@ public interface Authentication<T extends Authentication<T>> extends Configurati
 
     T withoutPasswords();
 
-    T merge(T other);
+    T merge(Authentication<?> other);
 
     void basicValidate() throws ConfigException;
 }

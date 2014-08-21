@@ -68,6 +68,7 @@ abstract class BaseConfigFileService<T extends Config<T>> implements ConfigFileS
 
             try {
                 reader = new BufferedReader(new InputStreamReader(new FileInputStream(configFileLocation), "UTF-8"));
+                addPreReadMixins(mapper);
                 fileConfig = mapper.readValue(reader, getConfigClass());
 
                 if(fileConfig instanceof PasswordsConfig<?>) {
@@ -123,6 +124,13 @@ abstract class BaseConfigFileService<T extends Config<T>> implements ConfigFileS
             log.debug("Environment is {}", System.getenv());
         }
     }
+
+    /**
+     * Add mixins to the ObjectMapper prior to reading in the config file.
+     * In most cases this method can be left empty.
+     * @param mapper The ObjectMapper to add the mixins to
+     */
+    protected abstract void addPreReadMixins(ObjectMapper mapper);
 
     private String getConfigFileLocation() {
         final String propertyValue = System.getProperty(configFileLocation);

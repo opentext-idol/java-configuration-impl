@@ -12,7 +12,7 @@ import lombok.Setter;
 public class SingleUserAuthenticationValidator implements Validator<SingleUserAuthentication> {
 
     @Setter
-    private ConfigService<? extends AuthenticationConfig<? extends SingleUserAuthentication, ?>> configService;
+    private ConfigService<? extends AuthenticationConfig<?>> configService;
 
     @Override
     public ValidationResult<?> validate(final SingleUserAuthentication config) {

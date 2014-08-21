@@ -62,7 +62,7 @@ public class CommunityAuthenticationTest {
     public void jsonDeserialization() throws IOException {
         final InputStream inputStream = getClass().getResourceAsStream("/com/autonomy/frontend/configuration/communityAuthentication.json");
 
-        final TestConfig<?> testConfig = objectMapper.readValue(inputStream, TestConfig.class);
+        final TestConfig testConfig = objectMapper.readValue(inputStream, TestConfig.class);
         final Authentication<?> authentication = testConfig.getAuthentication();
 
         if(authentication instanceof CommunityAuthentication) {

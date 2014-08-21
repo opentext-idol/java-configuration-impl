@@ -1,6 +1,7 @@
 package com.autonomy.frontend.configuration;
 
 import com.autonomy.aci.client.services.AciService;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Data;
@@ -40,11 +41,6 @@ public class CommunityAuthentication implements Authentication<CommunityAuthenti
     }
 
     @Override
-    public String getClassName() {
-        return getClass().getCanonicalName();
-    }
-
-    @Override
     public CommunityAuthentication generateDefaultLogin() {
         final Builder builder = new Builder(this);
 
@@ -73,13 +69,15 @@ public class CommunityAuthentication implements Authentication<CommunityAuthenti
     }
 
     @Override
-    public CommunityAuthentication merge(final CommunityAuthentication other) {
-        if(other != null) {
+    public CommunityAuthentication merge(final Authentication<?> other) {
+        if(other instanceof CommunityAuthentication) {
+            final CommunityAuthentication castOther = (CommunityAuthentication) other;
+
             final Builder builder = new Builder(this);
 
-            builder.setDefaultLogin(this.defaultLogin == null ? other.defaultLogin : this.defaultLogin.merge(other.defaultLogin));
-            builder.setCommunity(this.community == null ? other.community : this.community.merge(other.community));
-            builder.setMethod(this.method == null ? other.method : this.method);
+            builder.setDefaultLogin(this.defaultLogin == null ? castOther.defaultLogin : this.defaultLogin.merge(castOther.defaultLogin));
+            builder.setCommunity(this.community == null ? castOther.community : this.community.merge(castOther.community));
+            builder.setMethod(this.method == null ? castOther.method : this.method);
 
             return builder.build();
         }
@@ -108,6 +106,7 @@ public class CommunityAuthentication implements Authentication<CommunityAuthenti
     @JsonPOJOBuilder(withPrefix = "set")
     @Setter
     @Accessors(chain = true)
+    @JsonIgnoreProperties({"cas", "singleUser"}) // backwards compatibility
     public static class Builder {
 
         private DefaultLogin defaultLogin;
