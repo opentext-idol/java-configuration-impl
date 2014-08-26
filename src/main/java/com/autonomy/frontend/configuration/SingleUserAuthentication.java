@@ -45,7 +45,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
 
         builder.defaultLogin = DefaultLogin.generateDefaultLogin();
 
-        return this;
+        return builder.build();
     }
 
     @Override
@@ -54,7 +54,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
 
         builder.defaultLogin = null;
 
-        return this;
+        return builder.build();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
 
         builder.singleUser = singleUser.withHashedPassword();
 
-        return this;
+        return builder.build();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
 
         builder.singleUser = singleUser.withoutPasswords();
 
-        return this;
+        return builder.build();
     }
 
     @Override
