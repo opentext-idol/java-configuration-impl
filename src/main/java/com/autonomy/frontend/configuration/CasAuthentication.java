@@ -80,7 +80,7 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
     public CasAuthentication generateDefaultLogin() {
         final Builder builder = new Builder(this);
 
-        builder.defaultLogin = builder.defaultLogin.generateDefaultLogin();
+        builder.defaultLogin = DefaultLogin.generateDefaultLogin();
 
         return builder.build();
     }

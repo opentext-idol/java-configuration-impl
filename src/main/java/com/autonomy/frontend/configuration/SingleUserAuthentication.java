@@ -43,7 +43,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
     public SingleUserAuthentication generateDefaultLogin() {
         final Builder builder = new Builder(this);
 
-        builder.defaultLogin = defaultLogin.generateDefaultLogin();
+        builder.defaultLogin = DefaultLogin.generateDefaultLogin();
 
         return this;
     }

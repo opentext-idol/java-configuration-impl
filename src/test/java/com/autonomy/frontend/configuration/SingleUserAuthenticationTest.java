@@ -31,8 +31,7 @@ public class SingleUserAuthenticationTest {
 
     @Test
     public void jsonSerialization() {
-        final DefaultLogin defaultLogin = new DefaultLogin.Builder()
-            .build().generateDefaultLogin();
+        final DefaultLogin defaultLogin = DefaultLogin.generateDefaultLogin();
 
         final BCryptUsernameAndPassword singleUser = new BCryptUsernameAndPassword.Builder()
             .setUsername("admin")

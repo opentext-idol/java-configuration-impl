@@ -35,8 +35,8 @@ public class DefaultLogin {
         return builder.build();
     }
 
-    public DefaultLogin generateDefaultLogin() {
-        final Builder builder = new Builder(this);
+    public static DefaultLogin generateDefaultLogin() {
+        final Builder builder = new Builder();
 
         builder.username = "admin";
         builder.password = generatePassword();
@@ -44,7 +44,7 @@ public class DefaultLogin {
         return builder.build();
     }
 
-    private String generatePassword() {
+    private static String generatePassword() {
         return RandomStringUtils.random(12, true, true);
     }
 

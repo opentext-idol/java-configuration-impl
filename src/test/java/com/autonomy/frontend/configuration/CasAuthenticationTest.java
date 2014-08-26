@@ -30,9 +30,7 @@ public class CasAuthenticationTest {
 
     @Test
     public void jsonSerialization() {
-        final DefaultLogin empty = new DefaultLogin.Builder()
-            .build();
-        final DefaultLogin defaultLogin = empty.generateDefaultLogin();
+        final DefaultLogin defaultLogin = DefaultLogin.generateDefaultLogin();
 
         final CasConfig casConfig = new CasConfig.Builder()
             .setCasServerLoginUrl("/login/authenticatedLogin")

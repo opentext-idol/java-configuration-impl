@@ -44,7 +44,7 @@ public class CommunityAuthentication implements Authentication<CommunityAuthenti
     public CommunityAuthentication generateDefaultLogin() {
         final Builder builder = new Builder(this);
 
-        builder.defaultLogin = defaultLogin.generateDefaultLogin();
+        builder.defaultLogin = DefaultLogin.generateDefaultLogin();
 
         return builder.build();
     }

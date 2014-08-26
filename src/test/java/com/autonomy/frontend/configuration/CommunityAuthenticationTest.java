@@ -31,8 +31,7 @@ public class CommunityAuthenticationTest {
 
     @Test
     public void jsonSerialization() {
-        final DefaultLogin defaultLogin = new DefaultLogin.Builder()
-            .build().generateDefaultLogin();
+        final DefaultLogin defaultLogin = DefaultLogin.generateDefaultLogin();
 
         final ServerConfig community = new ServerConfig.Builder()
             .setProtocol(AciServerDetails.TransportProtocol.HTTP)
