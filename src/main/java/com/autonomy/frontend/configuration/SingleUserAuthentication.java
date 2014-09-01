@@ -1,5 +1,6 @@
 package com.autonomy.frontend.configuration;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -52,7 +53,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
     public SingleUserAuthentication withoutDefaultLogin() {
         final Builder builder = new Builder(this);
 
-        builder.defaultLogin = null;
+        builder.defaultLogin = new DefaultLogin.Builder().build();
 
         return builder.build();
     }
@@ -101,6 +102,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }
@@ -110,7 +112,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
 
         if(authentication instanceof SingleUserAuthentication) {
             final SingleUserAuthentication current = (SingleUserAuthentication) authentication;
-            return singleUser.validate(current.getSingleUser(), getDefaultLogin());
+            return singleUser.validate(current.getSingleUser(), current.getDefaultLogin());
         }
         else {
             // TODO: should this be true? e.g. if switching authentication types
@@ -125,12 +127,15 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
     @JsonIgnoreProperties({"cas", "community"}) // backwards compatibility
     public static class Builder {
 
-        private DefaultLogin defaultLogin;
+        private DefaultLogin defaultLogin = new DefaultLogin.Builder().build();
         private BCryptUsernameAndPassword singleUser;
         private String method;
 
         public Builder(final SingleUserAuthentication singleUserAuthentication) {
-            this.defaultLogin = singleUserAuthentication.defaultLogin;
+            if(singleUserAuthentication.defaultLogin != null) {
+                this.defaultLogin = singleUserAuthentication.defaultLogin;
+            }
+
             this.singleUser = singleUserAuthentication.singleUser;
             this.method = singleUserAuthentication.method;
         }

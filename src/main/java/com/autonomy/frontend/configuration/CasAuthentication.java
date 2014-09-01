@@ -89,7 +89,7 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
     public CasAuthentication withoutDefaultLogin() {
         final Builder builder = new Builder(this);
 
-        builder.defaultLogin = null;
+        builder.defaultLogin = new DefaultLogin.Builder().build();
 
         return builder.build();
     }
@@ -118,12 +118,14 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
     public static class Builder {
 
         private CasConfig cas;
-        private DefaultLogin defaultLogin;
+        private DefaultLogin defaultLogin = new DefaultLogin.Builder().build();
         private String method;
 
         public Builder(final CasAuthentication casAuthentication) {
             this.cas = casAuthentication.cas;
-            this.defaultLogin = casAuthentication.defaultLogin;
+            if(casAuthentication.defaultLogin != null) {
+                this.defaultLogin = casAuthentication.defaultLogin;
+            }
             this.method = casAuthentication.method;
         }
 

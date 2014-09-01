@@ -1,6 +1,7 @@
 package com.autonomy.frontend.configuration;
 
 import com.autonomy.aci.client.services.AciService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -53,7 +54,7 @@ public class CommunityAuthentication implements Authentication<CommunityAuthenti
     public CommunityAuthentication withoutDefaultLogin() {
         final Builder builder = new Builder(this);
 
-        builder.defaultLogin = null;
+        builder.defaultLogin = new DefaultLogin.Builder().build();
 
         return builder.build();
     }
@@ -94,6 +95,7 @@ public class CommunityAuthentication implements Authentication<CommunityAuthenti
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }
@@ -109,12 +111,15 @@ public class CommunityAuthentication implements Authentication<CommunityAuthenti
     @JsonIgnoreProperties({"cas", "singleUser"}) // backwards compatibility
     public static class Builder {
 
-        private DefaultLogin defaultLogin;
+        private DefaultLogin defaultLogin = new DefaultLogin.Builder().build();
         private ServerConfig community;
         private String method;
 
         public Builder(final CommunityAuthentication communityAuthentication) {
-            this.defaultLogin = communityAuthentication.defaultLogin;
+            if(communityAuthentication.defaultLogin != null) {
+                this.defaultLogin = communityAuthentication.defaultLogin;
+            }
+
             this.community = communityAuthentication.community;
             this.method = communityAuthentication.method;
         }
