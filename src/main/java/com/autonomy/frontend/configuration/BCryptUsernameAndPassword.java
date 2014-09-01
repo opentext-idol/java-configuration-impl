@@ -83,7 +83,7 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
 
         final boolean valid;
 
-        if(defaultLogin != null) {
+        if(defaultLogin.getPassword() != null) {
             valid = currentPassword.equals(defaultLogin.getPassword());
         }
         else {
@@ -102,8 +102,11 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         final Builder builder = new Builder(this);
 
         builder.plaintextPassword = null;
-        builder.hashedPassword = null;
-        builder.passwordRedacted = true;
+
+        if(StringUtils.isNotEmpty(builder.hashedPassword)) {
+            builder.hashedPassword = null;
+            builder.passwordRedacted = true;
+        }
 
         return builder.build();
     }
