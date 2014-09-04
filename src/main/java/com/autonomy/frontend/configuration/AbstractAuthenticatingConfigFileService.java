@@ -19,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
  * Operations on the Config are thread safe.
  *
  * @param <T> The type of the Configuration object. If it extends {@link com.autonomy.frontend.configuration.PasswordsConfig}, passwords will be encrypted
- *           and decrypted when the file is written and read respectively.  If it extends {@link com.autonomy.frontend.configuration.LoginConfig}, a default
- *           login will be generated for the initial config file, and which will be removed on subsequent writes.
+ *           and decrypted when the file is written and read respectively.  A default login will be generated for the
+ *           initial config file, and will be removed on subsequent writes.
  *
  */
 @Slf4j

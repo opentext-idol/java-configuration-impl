@@ -159,7 +159,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 	}
 
     /**
-     * Validate the config with the supplied {@link ValidationService} and calls {@link #postUpdate(Config)}
+     * Validate the config with the supplied {@link ValidationService} and calls {@link #postUpdate}
      * before writing the config to a file.
      *
      * @param config The new config
@@ -279,24 +279,6 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
     public void setValidationService(final ValidationService<T> validationService) {
         this.validationService = validationService;
     }
-
-    /**
-     * Called before the config is updated to allow properties to be added or removed. This method can be implemented
-     * as an identity method.
-     *
-     * @param config The config to be modified.
-     * @return A new config where the changes have been applied.
-     */
-    public abstract T preUpdate(final T config);
-
-    public abstract void postUpdate(final T config) throws Exception;
-
-    /**
-     * Called after the Config is initialised
-     * @param config The newly initialised config
-     * @throws Exception
-     */
-    public abstract void postInitialise(final T config) throws Exception;
 
     public abstract Class<T> getConfigClass();
 
