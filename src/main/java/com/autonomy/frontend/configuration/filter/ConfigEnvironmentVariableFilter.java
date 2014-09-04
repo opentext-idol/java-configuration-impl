@@ -1,6 +1,6 @@
 package com.autonomy.frontend.configuration.filter;
 
-import com.autonomy.frontend.configuration.ConfigService;
+import com.hp.autonomy.frontend.configuration.ConfigService;
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

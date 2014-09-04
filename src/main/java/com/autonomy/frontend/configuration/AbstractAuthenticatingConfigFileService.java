@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractAuthenticatingConfigFileService<T extends Config<T> & AuthenticatingConfig<T>> extends BaseConfigFileService<T> {
 
     @Override
-    T withHashedPasswords(final T config) {
+    public T withHashedPasswords(final T config) {
         if(config != null) {
             return config.withHashedPasswords();
         }
@@ -36,7 +36,7 @@ public abstract class AbstractAuthenticatingConfigFileService<T extends Config<T
     }
 
     @Override
-    T withoutDefaultLogin(final T config) {
+    public T withoutDefaultLogin(final T config) {
         if(config != null) {
             return config.withoutDefaultLogin();
         }
@@ -45,7 +45,7 @@ public abstract class AbstractAuthenticatingConfigFileService<T extends Config<T
     }
 
     @Override
-    T generateDefaultLogin(final T config) {
+    public T generateDefaultLogin(final T config) {
         if(config != null) {
             return config.generateDefaultLogin();
         }

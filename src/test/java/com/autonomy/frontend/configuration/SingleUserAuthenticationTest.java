@@ -2,6 +2,7 @@ package com.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hp.autonomy.frontend.configuration.LoginTypes;
 import java.io.IOException;
 import java.io.InputStream;
 import org.junit.Before;

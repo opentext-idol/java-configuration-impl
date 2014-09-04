@@ -1,5 +1,6 @@
 package com.autonomy.frontend.configuration;
 
+import com.hp.autonomy.frontend.configuration.WriteableConfigService;
 /*
  * $Id:$
  *

@@ -7,7 +7,7 @@ package com.autonomy.frontend.configuration;
  *
  * Last modified by $Author:$ on $Date:$
  */
-interface AuthenticatingConfig<T> {
+public interface AuthenticatingConfig<T> {
 
     T withoutDefaultLogin();
 

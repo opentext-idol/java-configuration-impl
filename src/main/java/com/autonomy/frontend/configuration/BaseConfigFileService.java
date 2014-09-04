@@ -29,7 +29,7 @@ import org.jasypt.util.text.TextEncryptor;
  * Last modified by $Author$ on $Date$
  */
 @Slf4j
-abstract class BaseConfigFileService<T extends Config<T>> implements ConfigFileService<T> {
+public abstract class BaseConfigFileService<T extends Config<T>> implements ConfigFileService<T> {
 
     private String configFileLocation;
     private String configFileName;
@@ -224,8 +224,6 @@ abstract class BaseConfigFileService<T extends Config<T>> implements ConfigFileS
 
             // TODO: This scales badly and needs rethinking
             if(filterProvider != null) {
-                mapper.addMixInAnnotations(ServerConfig.class, ConfigurationFilterMixin.class);
-                mapper.addMixInAnnotations(BCryptUsernameAndPassword.class, ConfigurationFilterMixin.class);
                 mapper.writer(filterProvider).writeValue(writer, configToWrite);
             }
             else {
@@ -323,9 +321,9 @@ abstract class BaseConfigFileService<T extends Config<T>> implements ConfigFileS
      */
     public abstract T getEmptyConfig();
 
-    abstract T generateDefaultLogin(T config);
+    public abstract T generateDefaultLogin(T config);
 
-    abstract T withoutDefaultLogin(T config);
+    public abstract T withoutDefaultLogin(T config);
 
-    abstract T withHashedPasswords(T config);
+    public abstract T withHashedPasswords(T config);
 }

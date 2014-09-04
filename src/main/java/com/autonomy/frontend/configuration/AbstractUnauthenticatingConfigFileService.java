@@ -9,17 +9,17 @@ package com.autonomy.frontend.configuration;
  */
 public abstract class AbstractUnauthenticatingConfigFileService<T extends Config<T>> extends BaseConfigFileService<T> {
     @Override
-    T generateDefaultLogin(final T config) {
+    public T generateDefaultLogin(final T config) {
         return config;
     }
 
     @Override
-    T withoutDefaultLogin(final T config) {
+    public T withoutDefaultLogin(final T config) {
         return config;
     }
 
     @Override
-    T withHashedPasswords(final T config) {
+    public T withHashedPasswords(final T config) {
         return config;
     }
 }
