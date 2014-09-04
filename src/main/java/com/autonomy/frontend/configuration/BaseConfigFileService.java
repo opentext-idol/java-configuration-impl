@@ -280,6 +280,13 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         this.validationService = validationService;
     }
 
+    /**
+     * Called after the Config is initialised
+     * @param config The newly initialised config
+     * @throws Exception
+     */
+    public abstract void postInitialise(final T config) throws Exception;
+
     public abstract Class<T> getConfigClass();
 
     /**
