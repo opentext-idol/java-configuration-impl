@@ -1,7 +1,5 @@
 package com.autonomy.frontend.configuration;
 
-import com.autonomy.common.io.IOUtils;
-import com.autonomy.common.lang.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import java.io.BufferedReader;
@@ -19,6 +17,7 @@ import java.io.Writer;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jasypt.util.text.TextEncryptor;
 
 /*
@@ -64,10 +63,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         if(StringUtils.isNotBlank(configFileLocation)) {
             log.debug("Using {} as config file location", configFileLocation);
 
-            Reader reader = null;
-
-            try {
-                reader = new BufferedReader(new InputStreamReader(new FileInputStream(configFileLocation), "UTF-8"));
+            try(Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(configFileLocation), "UTF-8"))){
                 addPreReadMixins(mapper);
                 fileConfig = mapper.readValue(reader, getConfigClass());
 
@@ -83,9 +79,6 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
                 log.error("Recording stack trace", e);
                 // throw this so we don't continue to start the webapp
                 throw new IllegalStateException("Could not initialize configuration", e);
-            }
-            finally {
-                IOUtils.closeQuietly(reader);
             }
 
             try (InputStream defaultConfigInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(defaultConfigFile)){
@@ -209,9 +202,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
     }
 
 	private void writeOutConfigFile(final T config, final String configFileLocation) throws IOException {
-        Writer writer = null;
-
-        try {
+        try(Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFileLocation), "UTF-8"))){
             log.debug("Writing out config file to {}", configFileLocation);
 
             T configToWrite = config;
@@ -219,8 +210,6 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
             if(configToWrite instanceof PasswordsConfig<?>) {
                 configToWrite = ((PasswordsConfig<T>) configToWrite).withEncryptedPasswords(textEncryptor);
             }
-
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFileLocation), "UTF-8"));
 
             // TODO: This scales badly and needs rethinking
             if(filterProvider != null) {
@@ -233,9 +222,6 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         catch(IOException e) {
             log.error("Error writing out config file", e);
             throw e;
-        }
-        finally {
-            IOUtils.closeQuietly(writer);
         }
     }
 
