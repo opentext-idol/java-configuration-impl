@@ -1,14 +1,11 @@
+/*
+ * Copyright 2013-2014 Hewlett-Packard Development Company, L.P.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+ */
+
 package com.hp.autonomy.frontend.configuration;
 
 import java.util.Map;
-
-/*
- * $Id:$
- *
- * Copyright (c) 2013, Autonomy Systems Ltd.
- *
- * Last modified by $Author:$ on $Date:$
- */
 
 /**
  * A basic configuration object.
@@ -27,8 +24,7 @@ public interface Config<T extends Config<T>> {
     Map<String, ConfigurationComponent> getValidationMap();
 
     /**
-     * Returns a representation of the enabled {@link ConfigurationComponent} this config
-     * as a Map, suitable for use with a {@link ValidationService}.
+     * Returns a representation of this config as a Map, suitable for use with a {@link ValidationService}.
      *
      * @return A map representation of the enabled components of this config.
      */

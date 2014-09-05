@@ -1,3 +1,8 @@
+/*
+ * Copyright 2013-2014 Hewlett-Packard Development Company, L.P.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+ */
+
 package com.hp.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,12 +25,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jasypt.util.text.TextEncryptor;
 
-/*
- * $Id$
+/**
+ * Reference implementation of {@link ConfigFileService}, which outputs configuration objects as JSON files.
+ * An additional type bound is placed on the configuration object this class uses.
  *
- * Copyright (c) 2013, Autonomy Systems Ltd.
+ * Clients of this API should extend {@link AbstractAuthenticatingConfigFileService} or
+ * {@link AbstractUnauthenticatingConfigFileService}, depending on their needs.
  *
- * Last modified by $Author$ on $Date$
+ * This class requires that a default config file be available at runtime.
+ *
+ * Operations on the Config object are thread safe.
+ *
+ * @param <T> The type of the Configuration object. If it extends {@link PasswordsConfig}, passwords will be encrypted
+ *           and decrypted when the file is written and read respectively.
+ *
  */
 @Slf4j
 public abstract class BaseConfigFileService<T extends Config<T>> implements ConfigFileService<T> {
@@ -49,12 +62,13 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
     private ValidationService<T> validationService;
 
     /**
-     * Initialises the service.
+     * Initialises the service
      *
-     * @throws IllegalStateException If an error occurs which prevent bean initialization
+     * @throws IllegalStateException If an error occurs which prevent service initialization
      * @throws Exception If an unspecified error occurs
      */
-	// Exception thrown by method in library
+    // Exception thrown by method in library
+    @SuppressWarnings("ProhibitedExceptionDeclared")
     @PostConstruct
     public void init() throws Exception {
         final String configFileLocation = getConfigFileLocation();
@@ -64,7 +78,6 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
             log.debug("Using {} as config file location", configFileLocation);
 
             try(Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(configFileLocation), "UTF-8"))){
-                addPreReadMixins(mapper);
                 fileConfig = mapper.readValue(reader, getConfigClass());
 
                 if(fileConfig instanceof PasswordsConfig<?>) {
@@ -118,13 +131,6 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         }
     }
 
-    /**
-     * Add mixins to the ObjectMapper prior to reading in the config file.
-     * In most cases this method can be left empty.
-     * @param mapper The ObjectMapper to add the mixins to
-     */
-    protected abstract void addPreReadMixins(ObjectMapper mapper);
-
     private String getConfigFileLocation() {
         final String propertyValue = System.getProperty(configFileLocation);
 
@@ -135,6 +141,9 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public T getConfig() {
         return config.get();
@@ -159,7 +168,8 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 	}
 
     /**
-     * Validate the config with the supplied {@link ValidationService} and calls {@link #postUpdate}
+     * Validate the config with the supplied {@link ValidationService}, calls {@link #withoutDefaultLogin(Config)}
+     * and {@link #withHashedPasswords(Config)} before setting the config, and calls {@link #postUpdate}
      * before writing the config to a file.
      *
      * @param config The new config
@@ -287,6 +297,9 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
      */
     public abstract void postInitialise(final T config) throws Exception;
 
+    /**
+     * @return The class object representing T.
+     */
     public abstract Class<T> getConfigClass();
 
     /**
@@ -296,9 +309,24 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
      */
     public abstract T getEmptyConfig();
 
+    /**
+     * Generates a default login for a new config file
+     * @param config The initial config object
+     * @return A copy of config with a default login, or the same config object if a default login is not required
+     */
     public abstract T generateDefaultLogin(T config);
 
+    /**
+     * Removes the default login from the configuration object
+     * @param config The initial config object
+     * @return A copy of config without a default login, or the same config object if a default login is not required
+     */
     public abstract T withoutDefaultLogin(T config);
 
+    /**
+     * Hashes any passwords in the configuration object
+     * @param config The initial config object
+     * @return A copy of config without any plaintext passwords, or the same config object if there are no passwords
+     */
     public abstract T withHashedPasswords(T config);
 }

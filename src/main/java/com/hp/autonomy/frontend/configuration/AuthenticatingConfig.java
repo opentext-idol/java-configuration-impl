@@ -1,11 +1,15 @@
+/*
+ * Copyright 2013-2014 Hewlett-Packard Development Company, L.P.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+ */
+
 package com.hp.autonomy.frontend.configuration;
 
-/*
- * $Id:$
+/**
  *
- * Copyright (c) 2014, Autonomy Systems Ltd.
+ * This interface exists for backwards compatibility reasons.  Prefer {@link AuthenticationConfig} instead.
  *
- * Last modified by $Author:$ on $Date:$
+ * @param <T> The type of the configuration object
  */
 public interface AuthenticatingConfig<T> {
 

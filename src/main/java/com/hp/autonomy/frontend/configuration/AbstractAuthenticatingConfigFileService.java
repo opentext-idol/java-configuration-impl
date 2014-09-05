@@ -1,25 +1,17 @@
+/*
+ * Copyright 2013-2014 Hewlett-Packard Development Company, L.P.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+ */
+
 package com.hp.autonomy.frontend.configuration;
 
 import lombok.extern.slf4j.Slf4j;
 
-/*
- * $Id$
- *
- * Copyright (c) 2013, Autonomy Systems Ltd.
- *
- * Last modified by $Author$ on $Date$
- */
-
 /**
- * Reference implementation of {@link ConfigFileService}, which outputs configuration objects as JSON files.
- * An additional type bound is placed on the configuration object this class uses.
+ * Implementation of {@link BaseConfigFileService} which will generate a default login when creating new config files
+ * and remove the default login and hash passwords when writing.
  *
- * This class requires that a default config file be available at runtime.
- *
- * Operations on the Config are thread safe.
- *
- * @param <T> The type of the Configuration object. If it extends {@link PasswordsConfig}, passwords will be encrypted
- *           and decrypted when the file is written and read respectively.  A default login will be generated for the
+ * @param <T> The type of the Configuration object. A default login will be generated for the
  *           initial config file, and will be removed on subsequent writes.
  *
  */

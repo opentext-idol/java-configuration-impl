@@ -1,3 +1,8 @@
+/*
+ * Copyright 2013-2014 Hewlett-Packard Development Company, L.P.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+ */
+
 package com.hp.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -6,18 +11,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-/*
- * $Id:$
- *
- * Copyright (c) 2013, Autonomy Systems Ltd.
- *
- * Last modified by $Author:$ on $Date:$
- */
-
 /**
  * Implementation of {@link Config} which provides a reference implementation of some methods.
  *
- * @param <T> The type of the config
+ * @param <T> The type of the configuration object
  */
 public abstract class AbstractConfig<T extends AbstractConfig<T>> implements Config<T> {
 

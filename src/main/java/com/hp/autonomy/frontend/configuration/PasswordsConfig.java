@@ -1,14 +1,11 @@
+/*
+ * Copyright 2013-2014 Hewlett-Packard Development Company, L.P.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+ */
+
 package com.hp.autonomy.frontend.configuration;
 
 import org.jasypt.util.text.TextEncryptor;
-
-/*
- * $Id:$
- *
- * Copyright (c) 2013, Autonomy Systems Ltd.
- *
- * Last modified by $Author:$ on $Date:$
- */
 
 /**
  * A Config which has some passwords which need encrypting and decrypting.
@@ -17,10 +14,21 @@ import org.jasypt.util.text.TextEncryptor;
  */
 public interface PasswordsConfig<T> {
 
+    /**
+     * @return A copy of this config with no passwords, or this if the config has no passwords
+     */
     T withoutPasswords();
 
+    /**
+     * @return A copy of this config with passwords encrypted by the supplied {@link TextEncryptor},
+     * or this if the config has no passwords
+     */
     T withEncryptedPasswords(TextEncryptor encryptor);
 
+    /**
+     * @return A copy of this config with passwords decrypted by the supplied {@link TextEncryptor},
+     * or this if the config has no passwords
+     */
     T withDecryptedPasswords(TextEncryptor encryptor);
 
 }
