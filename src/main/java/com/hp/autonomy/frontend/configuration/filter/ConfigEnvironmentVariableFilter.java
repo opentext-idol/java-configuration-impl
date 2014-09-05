@@ -1,3 +1,8 @@
+/*
+ * Copyright 2013-2014 Hewlett-Packard Development Company, L.P.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+ */
+
 package com.hp.autonomy.frontend.configuration.filter;
 
 import com.hp.autonomy.frontend.configuration.ConfigService;
@@ -11,13 +16,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/*
- * $Id$
- *
- * Copyright (c) 2013, Autonomy Systems Ltd.
- *
- * Last modified by $Author$ on $Date$
- */
 public class ConfigEnvironmentVariableFilter implements Filter {
 
     private String configPage;
