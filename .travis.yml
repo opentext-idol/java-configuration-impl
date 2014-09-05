@@ -15,7 +15,7 @@ env:
   # SONATYPE_PASSWORD
   - secure: F7d9c9knZ+8CvwthQ0f3zifu5PunABGX5VmZdkDsK4C/mUrvbRLti/X3sL73PF5xD/hCeGYgQfRCQZ3AcpDyP/7rB4dtKsUhAxdfAriUFqREv4gUbfZ/SBXGonYQqXmakflKmMn29+ct8Uq5WP29W82sIkUsB2fJkb4NvAa/l7s=
   # GPG_PASSPHRASE
-  - secure: Upv6JZi62kd18wWJO4zmFhjmxXT5FQil6RMLACfYz++TDCE2rXouLG1zGtNI/OvmnkEUibeguZehhfAwDuGK7V4Ze7Sw2gc91u035Ya5kFCOSZFzHOygI7vWNir4qE/2EOA3glVuu8TFgEOMrDFCkrwTQF9C7LiqaUOLkbscjRY=
+  - secure: DQG49bOk0+IfzWFeipgZ1S3RHUWjxarZCdMiDZSOZ0AJ9tRfPODIQM5Uv3hD1KBj2vlCvgWoLUeNw6085xMHLyihoTnAt2akEAyavIXpt6LZob32T34iUsFeofoT+dDphkZ1D4l9c4rHs2jti+rfDauxf6yltpdsWOIacpnfgkA=
   # GPG_KEYID
   - secure: CIYvdF/JUg3juXyNx0kh93wwk0YricZtkPz5qTfnaFdMdbVHdLR1axpNX5CkZZVtpypLH8g4kyOkr3QlYEukdBftcyyaeRCAH6ak1sASoDyY8jXpQgdNTzrlm7g0YJyg7XDwZqSBtJ8mhvb3d7b6g2YdcCJQGi9Mh6VIKwGoNpI=
   # GPG_KEY
