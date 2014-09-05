@@ -1,0 +1,14 @@
+{
+    "authentication": {
+        "method": "autonomy",
+        "singleUser": {
+            "username": "admin",
+            "hashedPassword": "$2a$12$uGikZXio88E.bl0A3oEe6eR.bAZxfzyifvQ4pAf6uLflCxUA55ONe"
+        },
+        "defaultLogin": {
+            "username": "admin",
+            "password": "password"
+        },
+        "className": "com.hp.autonomy.frontend.configuration.SingleUserAuthentication"
+    }
+}
