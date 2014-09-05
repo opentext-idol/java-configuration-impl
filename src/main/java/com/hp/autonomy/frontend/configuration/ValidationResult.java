@@ -5,9 +5,6 @@
 
 package com.hp.autonomy.frontend.configuration;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-
 /**
  * Associates a boolean with an object of arbitrary type which may provide additional information in
  * cases of validation failure or as side effects to the validation process.

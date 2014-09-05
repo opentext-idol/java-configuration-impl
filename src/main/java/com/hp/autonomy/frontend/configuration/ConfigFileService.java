@@ -5,8 +5,6 @@
 
 package com.hp.autonomy.frontend.configuration;
 
-import com.hp.autonomy.frontend.configuration.WriteableConfigService;
-
 /**
  * A {@link WriteableConfigService} which writes its configuration to a file.
  *

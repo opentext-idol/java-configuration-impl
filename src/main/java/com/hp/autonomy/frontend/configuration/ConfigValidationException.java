@@ -5,9 +5,6 @@
 
 package com.hp.autonomy.frontend.configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Exception thrown when updating a config if the config is invalid.
  */

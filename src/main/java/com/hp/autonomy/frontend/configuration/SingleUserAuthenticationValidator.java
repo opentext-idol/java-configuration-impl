@@ -5,7 +5,6 @@
 
 package com.hp.autonomy.frontend.configuration;
 
-import com.hp.autonomy.frontend.configuration.ConfigService;
 import lombok.Setter;
 
 public class SingleUserAuthenticationValidator implements Validator<SingleUserAuthentication> {
