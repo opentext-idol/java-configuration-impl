@@ -2,6 +2,7 @@ package com.hp.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.ConfigService;
@@ -20,6 +21,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @JsonDeserialize(builder = SingleUserAuthentication.Builder.class)
+@JsonTypeName("SingleUserAuthentication")
 public class SingleUserAuthentication implements Authentication<SingleUserAuthentication> {
 
     private final DefaultLogin defaultLogin;
@@ -126,7 +128,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
     @JsonPOJOBuilder(withPrefix = "set")
     @Setter
     @Accessors(chain = true)
-    @JsonIgnoreProperties({"cas", "community"}) // backwards compatibility
+    @JsonIgnoreProperties({"cas", "community", "className"}) // backwards compatibility
     public static class Builder {
 
         private DefaultLogin defaultLogin = new DefaultLogin.Builder().build();

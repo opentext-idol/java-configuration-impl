@@ -47,7 +47,7 @@ public class CasAuthenticationTest {
         final JsonNode jsonNode = objectMapper.valueToTree(casAuthentication);
 
         // hard coding this would prevent package movement
-        assertThat(jsonNode.get("className").asText(), is(CasAuthentication.class.getCanonicalName()));
+        assertThat(jsonNode.get("name").asText(), is("CasAuthentication"));
         assertThat(jsonNode.get("method").asText(), is(LoginTypes.CAS));
         assertThat(jsonNode.get("cas").get("casServerLoginUrl").asText(), is("/login/authenticatedLogin"));
         assertThat(jsonNode.get("cas").get("casServerUrlPrefix").asText(), is("prefix"));

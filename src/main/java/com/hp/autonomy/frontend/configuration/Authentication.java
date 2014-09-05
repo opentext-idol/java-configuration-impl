@@ -1,5 +1,7 @@
 package com.hp.autonomy.frontend.configuration;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /*
@@ -9,7 +11,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  *
  * Last modified by $Author:$ on $Date:$
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "name")
+@JsonSubTypes({
+    @JsonSubTypes.Type(SingleUserAuthentication.class),
+    @JsonSubTypes.Type(CasAuthentication.class)
+})
+@JsonIgnoreProperties("className")
 public interface Authentication<T extends Authentication<T>> extends ConfigurationComponent {
 
     String getMethod();

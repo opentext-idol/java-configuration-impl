@@ -9,6 +9,7 @@
             "username": "admin",
             "password": "password"
         },
-        "className": "com.hp.autonomy.frontend.configuration.SingleUserAuthentication"
+        "className": "com.autonomy.frontend.configuration.SingleUserAuthentication",
+        "name": "SingleUserAuthentication"
     }
 }

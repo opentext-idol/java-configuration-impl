@@ -2,6 +2,7 @@ package com.hp.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.LoginTypes;
@@ -19,6 +20,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @JsonDeserialize(builder = CasAuthentication.Builder.class)
+@JsonTypeName("CasAuthentication")
 public class CasAuthentication implements Authentication<CasAuthentication>, ValidatingConfigurationComponent {
 
     private final DefaultLogin defaultLogin;
@@ -115,7 +117,7 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
     @JsonPOJOBuilder(withPrefix = "set")
     @Accessors(chain = true)
     @Setter
-    @JsonIgnoreProperties({"singleUser", "community"}) // backwards compatibility
+    @JsonIgnoreProperties({"singleUser", "community", "className"}) // backwards compatibility
     public static class Builder {
 
         private CasConfig cas;

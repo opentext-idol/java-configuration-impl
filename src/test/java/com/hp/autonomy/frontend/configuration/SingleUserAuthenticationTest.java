@@ -45,8 +45,7 @@ public class SingleUserAuthenticationTest {
 
         final JsonNode jsonNode = objectMapper.valueToTree(singleUserAuthentication);
 
-        // hard coding this would prevent package movement
-        assertThat(jsonNode.get("className").asText(), is(SingleUserAuthentication.class.getCanonicalName()));
+        assertThat(jsonNode.get("name").asText(), is("SingleUserAuthentication"));
         assertThat(jsonNode.get("method").asText(), is(LoginTypes.SINGLE_USER));
         assertThat(jsonNode.get("singleUser").get("username").asText(), is("admin"));
         assertThat(jsonNode.get("singleUser").get("hashedPassword").asText(), is("$2a$12$uGikZXio88E.bl0A3oEe6eR.bAZxfzyifvQ4pAf6uLflCxUA55ONe"));

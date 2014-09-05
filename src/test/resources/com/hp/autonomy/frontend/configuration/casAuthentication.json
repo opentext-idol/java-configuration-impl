@@ -10,6 +10,7 @@
             "username": "admin",
             "password": "password"
         },
-        "className": "com.hp.autonomy.frontend.configuration.CasAuthentication"
+        "className": "com.hp.autonomy.frontend.configuration.CasAuthentication",
+        "name": "CasAuthentication"
     }
 }
