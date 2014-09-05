@@ -24,8 +24,7 @@ public interface Config<T extends Config<T>> {
     Map<String, ConfigurationComponent> getValidationMap();
 
     /**
-     * Returns a representation of the enabled {@link ConfigurationComponent} this config
-     * as a Map, suitable for use with a {@link ValidationService}.
+     * Returns a representation of this config as a Map, suitable for use with a {@link ValidationService}.
      *
      * @return A map representation of the enabled components of this config.
      */

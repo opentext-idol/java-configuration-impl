@@ -13,6 +13,9 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang.RandomStringUtils;
 
+/**
+ * Wrapper type around a {@link UsernameAndPassword} which allows for generating default password
+ */
 @Data
 @JsonDeserialize(builder = DefaultLogin.Builder.class)
 public class DefaultLogin {
@@ -33,6 +36,10 @@ public class DefaultLogin {
         return builder.build();
     }
 
+    /**
+     * Static factory for generating pre-populated default logins
+     * @return A DefaultLogin with the username "admin" and a random password
+     */
     public static DefaultLogin generateDefaultLogin() {
         final Builder builder = new Builder();
 

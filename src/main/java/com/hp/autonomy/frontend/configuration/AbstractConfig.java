@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Implementation of {@link Config} which provides a reference implementation of some methods.
  *
- * @param <T> The type of the config
+ * @param <T> The type of the configuration object
  */
 public abstract class AbstractConfig<T extends AbstractConfig<T>> implements Config<T> {
 

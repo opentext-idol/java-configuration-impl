@@ -5,6 +5,12 @@
 
 package com.hp.autonomy.frontend.configuration;
 
+/**
+ *
+ * This interface exists for backwards compatibility reasons.  Prefer {@link AuthenticationConfig} instead.
+ *
+ * @param <T> The type of the configuration object
+ */
 public interface AuthenticatingConfig<T> {
 
     T withoutDefaultLogin();

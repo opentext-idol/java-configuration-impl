@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+/**
+ * {@link Authentication} object for a single username and passowrd
+ */
 @Data
 @JsonDeserialize(builder = SingleUserAuthentication.Builder.class)
 @JsonTypeName("SingleUserAuthentication")

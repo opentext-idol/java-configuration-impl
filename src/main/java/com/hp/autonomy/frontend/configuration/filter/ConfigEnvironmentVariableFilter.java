@@ -16,6 +16,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Servlet filter that redirects users to an error page if no configuration is available in the provided config service
+ */
 public class ConfigEnvironmentVariableFilter implements Filter {
 
     private String configPage;
@@ -53,10 +56,16 @@ public class ConfigEnvironmentVariableFilter implements Filter {
 
     }
 
+    /**
+     * @param configPage The URI of the error page
+     */
     public void setConfigPage(final String configPage) {
         this.configPage = configPage;
     }
 
+    /**
+     * @param configService The {@link ConfigService} to read the configuration from
+     */
     public void setConfigService(final ConfigService<?> configService) {
         this.configService = configService;
     }

@@ -14,6 +14,9 @@ import lombok.experimental.Accessors;
 import org.apache.commons.lang.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
 
+/**
+ * Configuration object for a username and password where the password is hashed using BCrypt
+ */
 @Getter
 @EqualsAndHashCode
 @JsonDeserialize(builder = BCryptUsernameAndPassword.Builder.class)
@@ -57,6 +60,9 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         return true;
     }
 
+    /**
+     * @return A copy of this object with a hashed password and no plaintext password
+     */
     public BCryptUsernameAndPassword withHashedPassword() {
         final Builder builder = new Builder(this);
 
@@ -74,6 +80,13 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         return username != null;
     }
 
+    /**
+     * Validates this component by comparing the current password against either a default login or an existing single
+     * user
+     * @param existingSingleUser The current single user
+     * @param defaultLogin The current default credentials.  May be null
+     * @return A true {@link ValidationResult} if valid, or false otherwise.  The false result includes a detail message
+     */
     public ValidationResult<?> validate(final BCryptUsernameAndPassword existingSingleUser, final UsernameAndPassword defaultLogin) {
         if(passwordRedacted) {
             return new ValidationResult<>(true);

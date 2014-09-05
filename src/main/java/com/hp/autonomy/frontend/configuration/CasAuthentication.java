@@ -18,6 +18,9 @@ import lombok.experimental.Accessors;
 @Data
 @JsonDeserialize(builder = CasAuthentication.Builder.class)
 @JsonTypeName("CasAuthentication")
+/**
+ * {@link Authentication} for using CAS
+ */
 public class CasAuthentication implements Authentication<CasAuthentication>, ValidatingConfigurationComponent {
 
     private final DefaultLogin defaultLogin;

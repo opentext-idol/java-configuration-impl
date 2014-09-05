@@ -5,6 +5,11 @@
 
 package com.hp.autonomy.frontend.configuration;
 
+/**
+ * A configuration object which contains an {@link Authentication} object
+ *
+ * @param <T> The type of the configuration object
+ */
 public interface AuthenticationConfig<T extends AuthenticationConfig<T>> extends AuthenticatingConfig<T> {
 
     Authentication<?> getAuthentication();
