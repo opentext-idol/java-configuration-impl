@@ -1,3 +1,8 @@
+/*
+ * Copyright 2013-2014 Hewlett-Packard Development Company, L.P.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+ */
+
 package com.hp.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -5,22 +10,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.hp.autonomy.frontend.configuration.LoginTypes;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-/*
- * $Id:$
- *
- * Copyright (c) 2014, Autonomy Systems Ltd.
- *
- * Last modified by $Author:$ on $Date:$
- */
 @Data
 @JsonDeserialize(builder = CasAuthentication.Builder.class)
 @JsonTypeName("CasAuthentication")
+/**
+ * {@link Authentication} for using CAS
+ */
 public class CasAuthentication implements Authentication<CasAuthentication>, ValidatingConfigurationComponent {
 
     private final DefaultLogin defaultLogin;

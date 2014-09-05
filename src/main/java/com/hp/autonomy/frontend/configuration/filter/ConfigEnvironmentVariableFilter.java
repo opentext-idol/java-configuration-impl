@@ -1,3 +1,8 @@
+/*
+ * Copyright 2013-2014 Hewlett-Packard Development Company, L.P.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+ */
+
 package com.hp.autonomy.frontend.configuration.filter;
 
 import com.hp.autonomy.frontend.configuration.ConfigService;
@@ -11,12 +16,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/*
- * $Id$
- *
- * Copyright (c) 2013, Autonomy Systems Ltd.
- *
- * Last modified by $Author$ on $Date$
+/**
+ * Servlet filter that redirects users to an error page if no configuration is available in the provided config service
  */
 public class ConfigEnvironmentVariableFilter implements Filter {
 
@@ -55,10 +56,16 @@ public class ConfigEnvironmentVariableFilter implements Filter {
 
     }
 
+    /**
+     * @param configPage The URI of the error page
+     */
     public void setConfigPage(final String configPage) {
         this.configPage = configPage;
     }
 
+    /**
+     * @param configService The {@link ConfigService} to read the configuration from
+     */
     public void setConfigService(final ConfigService<?> configService) {
         this.configService = configService;
     }
