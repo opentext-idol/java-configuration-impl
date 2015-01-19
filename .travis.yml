@@ -7,7 +7,9 @@ branches:
   - develop
 before_install:
 - ls -al /home/travis/.gnupg
+- cat /home/travis/.gnupg/gpg.conf
 - echo $GPG_KEY > tmp.txt && gpg --batch --passphrase-file tmp.txt secret.gpg.gpg
+- ls -al /home/travis/.gnupg
 script: mvn deploy --settings settings.xml -Prelease
 env:
   global:
