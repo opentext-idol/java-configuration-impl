@@ -11,7 +11,7 @@ before_install:
 - echo 'allow-loopback-pinentry' > /home/travis/.gnupg/gpg-agent.conf
 - cat /home/travis/.gnupg/gpg-agent.conf
 - gpg --version
-- echo $GPG_KEY > tmp.txt && gpg --batch --passphrase-fd 1 tmp.txt secret.gpg.gpg
+- echo $GPG_KEY > tmp.txt && gpg --batch --passphrase-fd 1 1<tmp.txt secret.gpg.gpg
 - ls -al /home/travis/.gnupg
 script: mvn deploy --settings settings.xml -Prelease
 env:
