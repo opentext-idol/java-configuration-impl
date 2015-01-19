@@ -1,14 +1,10 @@
 /*
- * Copyright 2013-2014 Hewlett-Packard Development Company, L.P.
+ * Copyright 2013-2015 Hewlett-Packard Development Company, L.P.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
 package com.hp.autonomy.frontend.configuration;
 
-import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
-import com.hp.autonomy.frontend.configuration.ValidationResult;
-import com.hp.autonomy.frontend.configuration.ValidationServiceImpl;
-import com.hp.autonomy.frontend.configuration.Validator;
 import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
