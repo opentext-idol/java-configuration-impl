@@ -5,9 +5,6 @@
 
 package com.hp.autonomy.frontend.configuration;
 
-import com.hp.autonomy.frontend.configuration.AbstractConfig;
-import com.hp.autonomy.frontend.configuration.ConfigException;
-import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;

@@ -5,10 +5,6 @@
 
 package com.hp.autonomy.frontend.configuration;
 
-import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
-import com.hp.autonomy.frontend.configuration.ValidationResult;
-import com.hp.autonomy.frontend.configuration.ValidationServiceImpl;
-import com.hp.autonomy.frontend.configuration.Validator;
 import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
