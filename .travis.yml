@@ -6,13 +6,7 @@ branches:
   - master
   - develop
 before_install:
-- ls -al /home/travis/.gnupg
-- cat /home/travis/.gnupg/gpg.conf
-- echo 'allow-loopback-pinentry' > /home/travis/.gnupg/gpg-agent.conf
-- cat /home/travis/.gnupg/gpg-agent.conf
-- gpg --version
-- echo $GPG_KEY > tmp.txt && gpg --batch --passphrase-fd 1 1<tmp.txt secret.gpg.gpg
-- ls -al /home/travis/.gnupg
+- echo $GPG_KEY > tmp.txt && gpg --batch --passphrase-fd 3 3<tmp.txt secret.gpg.gpg
 script: mvn deploy --settings settings.xml -Prelease
 env:
   global:
