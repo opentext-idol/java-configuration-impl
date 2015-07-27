@@ -15,6 +15,9 @@ import org.apache.commons.lang.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Configuration for a Redis server. This allows both a single Redis or a Redis Sentinel configuration
+ */
 @Data
 @JsonDeserialize(builder = RedisConfig.Builder.class)
 public class RedisConfig {
@@ -30,6 +33,12 @@ public class RedisConfig {
         sentinels = builder.sentinels;
     }
 
+    /**
+     * Validates the configuration
+     * @throws ConfigException If either:
+     * <li>address is non null and invalid, and sentinels is null or empty </li>
+     * <li>sentinels is non null and non empty and masterName is null or blank</li>
+     */
     public void basicValidate() throws ConfigException {
         if ((address != null && !address.validate()) && (sentinels == null || sentinels.isEmpty())) {
             throw new ConfigException("redis", "Redis configuration requires either an address or at least one sentinel to connect to");
@@ -40,6 +49,11 @@ public class RedisConfig {
         }
     }
 
+    /**
+     * Creates a new RedisConfig using values from this with missing values supplied by other
+     * @param other The other Redis configuration
+     * @return The new merged Redis config
+     */
     public RedisConfig merge(final RedisConfig other) {
         final Builder builder = new Builder(this);
         if (masterName == null) builder.masterName = other.masterName;
