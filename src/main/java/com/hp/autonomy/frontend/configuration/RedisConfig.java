@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -25,12 +24,14 @@ public class RedisConfig {
     private final String password;
     private final HostAndPort address;
     private final Set<HostAndPort> sentinels;
+    private final Integer database;
 
     private RedisConfig(final Builder builder) {
         masterName = builder.masterName;
         password = builder.password;
         address = builder.address;
         sentinels = builder.sentinels;
+        database = builder.database;
     }
 
     /**
@@ -59,6 +60,7 @@ public class RedisConfig {
         if (masterName == null) builder.masterName = other.masterName;
         if (password == null) builder.password = other.password;
         if (sentinels == null) builder.sentinels = other.sentinels;
+        if (database == null) builder.database = other.database;
         builder.address = address == null ? other.address : address.merge(other.address);
         return builder.build();
     }
@@ -72,12 +74,14 @@ public class RedisConfig {
         private String password;
         private HostAndPort address;
         private Set<HostAndPort> sentinels;
+        private Integer database;
 
         public Builder(final RedisConfig config) {
             masterName = config.masterName;
             password = config.password;
             address = config.address;
             sentinels = config.sentinels;
+            database = config.database;
         }
 
         public RedisConfig build() {
