@@ -1,0 +1,6 @@
+{
+  "someNewField": "x",
+  "someObject": {
+    "someNestedField": "y"
+  }
+}
