@@ -74,6 +74,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         final String configFileLocation = getConfigFileLocation();
         T fileConfig = getEmptyConfig();
 
+        boolean fileExists = false;
         if(StringUtils.isNotBlank(configFileLocation)) {
             log.debug("Using {} as config file location", configFileLocation);
 
@@ -83,62 +84,69 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
                 if(fileConfig instanceof PasswordsConfig<?>) {
                     fileConfig = ((PasswordsConfig<T>) fileConfig).withDecryptedPasswords(textEncryptor);
                 }
+
+                fileExists = true;
             }
-            catch(FileNotFoundException e) {
+            catch(final FileNotFoundException e) {
                 log.warn("Config file not found, using empty configuration object");
             }
-            catch(IOException e) {
+            catch(final IOException e) {
                 log.error("Error reading config file at {}", configFileLocation);
                 log.error("Recording stack trace", e);
                 // throw this so we don't continue to start the webapp
                 throw new IllegalStateException("Could not initialize configuration", e);
             }
+        }
 
-            try (InputStream defaultConfigInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(defaultConfigFile)){
-                final T defaultConfig = mapper.readValue(defaultConfigInputStream, getConfigClass());
+        if (StringUtils.isNotBlank(defaultConfigFile)) {
+            try (InputStream defaultConfigInputStream = getClass().getResourceAsStream(defaultConfigFile)) {
+                if (defaultConfigInputStream != null) {
+                    final T defaultConfig = mapper.readValue(defaultConfigInputStream, getConfigClass());
 
-                T mergedConfig = fileConfig.merge(defaultConfig);
+                    fileConfig = fileConfig.merge(defaultConfig);
 
-                if(fileConfig.equals(getEmptyConfig())) {
-                    mergedConfig = generateDefaultLogin(mergedConfig);
+                    if (!fileExists) {
+                        fileConfig = generateDefaultLogin(fileConfig);
 
-                    try {
-                        writeOutConfigFile(mergedConfig, configFileLocation);
-                    }
-                    catch(IOException e) {
-                        throw new IllegalStateException("Could not initialize configuration", e);
+                        try {
+                            writeOutConfigFile(fileConfig, configFileLocation);
+                        } catch (final IOException e) {
+                            throw new IllegalStateException("Could not initialize configuration", e);
+                        }
                     }
                 }
-
-                mergedConfig.basicValidate();
-                this.config.set(mergedConfig);
-
-                postInitialise(getConfig());
-            }
-            catch(IOException e) {
+            } catch (final IOException e) {
                 log.error("Error reading default config file", e);
                 // throw this so we don't continue to start the webapp
                 throw new IllegalStateException("Could not initialize configuration", e);
             }
-            catch(ConfigException e){
-            	log.error("Config validation failed in " + e);
-            	throw new IllegalStateException("Could not initialize configuration", e);
-            }
         }
-        else {
+
+        try {
+            fileConfig.basicValidate();
+        } catch (final ConfigException e) {
+            log.error("Config validation failed in " + e);
+            throw new IllegalStateException("Could not initialize configuration", e);
+        }
+
+        if (fileConfig.equals(getEmptyConfig())) {
             log.info("Cannot read value from {}", configFileLocation);
             log.debug("Environment is {}", System.getenv());
+        } else {
+            config.set(fileConfig);
+            postInitialise(getConfig());
         }
     }
 
-    private String getConfigFileLocation() {
-        final String propertyValue = System.getProperty(configFileLocation);
-
-        if(propertyValue != null) {
-            return propertyValue + File.separator + configFileName;
-        } else {
-            return null;
+    protected String getConfigFileLocation() {
+        if (configFileLocation != null) {
+            final String propertyValue = System.getProperty(configFileLocation);
+            if (propertyValue != null) {
+                return propertyValue + File.separator + configFileName;
+            }
         }
+
+        throw new IllegalStateException("No configuration file defined. System property key: " + configFileLocation);
     }
 
     /**
@@ -190,7 +198,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 
         try{
             postUpdate(config);
-        } catch (ConfigException ce) {
+        } catch (final ConfigException ce) {
             setConfig(initialConfig);
             throw ce;
         }
@@ -229,7 +237,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
                 mapper.writeValue(writer, configToWrite);
             }
         }
-        catch(IOException e) {
+        catch(final IOException e) {
             log.error("Error writing out config file", e);
             throw e;
         }
@@ -240,7 +248,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
      *                            of the config file.
      */
     public void setConfigFileLocation(final String systemProperty) {
-        this.configFileLocation = systemProperty;
+        configFileLocation = systemProperty;
     }
 
     /**
