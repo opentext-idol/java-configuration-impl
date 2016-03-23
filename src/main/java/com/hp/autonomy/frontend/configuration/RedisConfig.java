@@ -25,6 +25,7 @@ public class RedisConfig {
     private final HostAndPort address;
     private final Set<HostAndPort> sentinels;
     private final Integer database;
+    private final Boolean autoConfigure;
 
     private RedisConfig(final Builder builder) {
         masterName = builder.masterName;
@@ -32,6 +33,7 @@ public class RedisConfig {
         address = builder.address;
         sentinels = builder.sentinels;
         database = builder.database;
+        autoConfigure = builder.autoConfigure;
     }
 
     /**
@@ -61,6 +63,7 @@ public class RedisConfig {
         if (password == null) builder.password = other.password;
         if (sentinels == null) builder.sentinels = other.sentinels;
         if (database == null) builder.database = other.database;
+        if (autoConfigure == null) builder.autoConfigure = other.autoConfigure;
         builder.address = address == null ? other.address : address.merge(other.address);
         return builder.build();
     }
@@ -75,6 +78,7 @@ public class RedisConfig {
         private HostAndPort address;
         private Set<HostAndPort> sentinels;
         private Integer database;
+        private Boolean autoConfigure;
 
         public Builder(final RedisConfig config) {
             masterName = config.masterName;
@@ -82,6 +86,7 @@ public class RedisConfig {
             address = config.address;
             sentinels = config.sentinels;
             database = config.database;
+            autoConfigure = config.autoConfigure;
         }
 
         public RedisConfig build() {

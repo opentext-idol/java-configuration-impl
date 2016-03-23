@@ -48,7 +48,7 @@ public class HostAndPort {
      * @return True if the hostname is not empty and the port is between 0 and 65536; false otherwise
      */
     public boolean validate() {
-        return !StringUtils.isEmpty(host) && port > 0 && port <= 65535;
+        return !StringUtils.isEmpty(host) && port != null && port > 0 && port <= 65535;
     }
 
     @Override
