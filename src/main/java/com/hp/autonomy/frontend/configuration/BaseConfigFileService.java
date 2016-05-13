@@ -196,14 +196,25 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         final T initialConfig = getConfig();
         setConfig(config);
 
+        safePostUpdate(config, initialConfig);
+
+        try {
+            writeOutConfigFile(this.config.get(), getConfigFileLocation());
+        } catch (final IOException e) {
+            setConfig(initialConfig);
+            safePostUpdate(initialConfig, initialConfig);
+
+            throw e;
+        }
+    }
+
+    private void safePostUpdate(final T config, final T initialConfig) throws Exception {
         try{
             postUpdate(config);
         } catch (final ConfigException ce) {
             setConfig(initialConfig);
             throw ce;
         }
-
-        writeOutConfigFile(this.config.get(), getConfigFileLocation());
     }
 
     private void setConfig(final T config) {
