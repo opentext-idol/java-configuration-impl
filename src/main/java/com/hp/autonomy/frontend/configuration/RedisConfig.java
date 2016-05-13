@@ -25,6 +25,12 @@ public class RedisConfig {
     private final HostAndPort address;
     private final Set<HostAndPort> sentinels;
     private final Integer database;
+
+    /**
+     * If true, indicates that application should configure redis. Otherwise, the application can assume that redis has
+     * been configured correctly. This is useful because some secure redis instances (eg Azure) don't allow clients to
+     * run the CONFIG command.
+     */
     private final Boolean autoConfigure;
 
     private RedisConfig(final Builder builder) {
