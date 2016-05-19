@@ -142,7 +142,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         if (configFileLocation != null) {
             final String propertyValue = System.getProperty(configFileLocation);
             if (propertyValue != null) {
-                return propertyValue + File.separator + configFileName;
+                return propertyValue + (propertyValue.matches(".*(?:/|\\\\)$") ? configFileName : File.separator + configFileName);
             }
         }
 
