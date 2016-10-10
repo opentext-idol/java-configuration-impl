@@ -3,11 +3,13 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.validation;
 
-import java.util.HashSet;
+import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;

@@ -3,7 +3,7 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.authentication;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -32,15 +32,14 @@ public class UsernameAndPassword {
     }
 
     public UsernameAndPassword merge(final UsernameAndPassword usernameAndPassword) {
-        if(usernameAndPassword != null) {
+        if (usernameAndPassword != null) {
             final Builder builder = new Builder();
 
             builder.setUsername(username == null ? usernameAndPassword.username : this.username);
             builder.setUsername(password == null ? usernameAndPassword.password : this.password);
 
             return builder.build();
-        }
-        else {
+        } else {
             return this;
         }
     }

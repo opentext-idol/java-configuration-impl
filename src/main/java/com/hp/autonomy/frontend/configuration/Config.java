@@ -5,11 +5,13 @@
 
 package com.hp.autonomy.frontend.configuration;
 
+import com.hp.autonomy.frontend.configuration.validation.ValidationService;
+
 import java.util.Map;
 
 /**
  * A basic configuration object.
- *
+ * <p>
  * Implementations of this class should be immutable.
  *
  * @param <T> The type of the config.
@@ -40,13 +42,12 @@ public interface Config<T extends Config<T>> {
 
     /**
      * Combine this Config with another of the same type and returns a new Config.
-     *
+     * <p>
      * The new config will have the same attributes as this config, with missing attributes supplied by other.
-     *
+     * <p>
      * Sub components of the Config should be merged where possible.
      *
      * @param other The configuration to merge with.
-     *
      * @return A new Config which is a combination of this and other
      */
     T merge(T other);

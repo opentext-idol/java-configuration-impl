@@ -3,7 +3,7 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.filter;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 
@@ -15,4 +15,5 @@ import com.fasterxml.jackson.annotation.JsonFilter;
  * @see <a href="http://wiki.fasterxml.com/JacksonMixInAnnotations">http://wiki.fasterxml.com/JacksonMixInAnnotations</a>
  */
 @JsonFilter("configurationFilter")
-public abstract class ConfigurationFilterMixin {}
+public abstract class ConfigurationFilterMixin {
+}

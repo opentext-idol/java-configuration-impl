@@ -3,7 +3,9 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.validation;
+
+import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
 
 /**
  * A Validator is responsible for validating configuration components which have external dependencies.
@@ -16,7 +18,6 @@ public interface Validator<T extends ConfigurationComponent> {
      * Validates the given ConfigurationComponent
      *
      * @param config The ConfigurationComponent to validate
-     *
      * @return The result of the validation
      */
     ValidationResult<?> validate(T config);

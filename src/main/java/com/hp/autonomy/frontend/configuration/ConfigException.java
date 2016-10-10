@@ -12,14 +12,14 @@ import lombok.Getter;
  */
 public class ConfigException extends Exception {
 
-	private static final long serialVersionUID = -6631508891944406923L;
+    private static final long serialVersionUID = -6631508891944406923L;
 
     @Getter
     private final String section;
 
     public ConfigException(final String section, final String message) {
         super(section + ": " + message);
-        
+
         this.section = section;
     }
 

@@ -5,6 +5,8 @@
 
 package com.hp.autonomy.frontend.configuration;
 
+import com.hp.autonomy.frontend.configuration.validation.Validator;
+
 /**
  * A sub component of a Configuration object which is designed for use with a {@link Validator}
  */

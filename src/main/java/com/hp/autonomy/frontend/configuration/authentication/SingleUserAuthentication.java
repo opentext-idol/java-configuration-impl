@@ -3,13 +3,17 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.authentication;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.hp.autonomy.frontend.configuration.ConfigException;
+import com.hp.autonomy.frontend.configuration.ConfigService;
+import com.hp.autonomy.frontend.configuration.LoginTypes;
+import com.hp.autonomy.frontend.configuration.validation.ValidationResult;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -81,7 +85,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
 
     @Override
     public SingleUserAuthentication merge(final Authentication<?> other) {
-        if(other instanceof SingleUserAuthentication) {
+        if (other instanceof SingleUserAuthentication) {
             final SingleUserAuthentication castOther = (SingleUserAuthentication) other;
 
             final Builder builder = new Builder(this);
@@ -91,15 +95,14 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
             builder.setMethod(this.method == null ? castOther.method : this.method);
 
             return builder.build();
-        }
-        else {
+        } else {
             return this;
         }
     }
 
     @Override
     public void basicValidate() throws ConfigException {
-        if(LoginTypes.SINGLE_USER.equalsIgnoreCase(method)) {
+        if (LoginTypes.SINGLE_USER.equalsIgnoreCase(method)) {
             singleUser.basicValidate();
         }
     }
@@ -113,11 +116,10 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
     public ValidationResult<?> validate(final ConfigService<? extends AuthenticationConfig<?>> configService) {
         final Authentication<?> authentication = configService.getConfig().getAuthentication();
 
-        if(authentication instanceof SingleUserAuthentication) {
+        if (authentication instanceof SingleUserAuthentication) {
             final SingleUserAuthentication current = (SingleUserAuthentication) authentication;
             return singleUser.validate(current.getSingleUser(), current.getDefaultLogin());
-        }
-        else {
+        } else {
             // TODO: should this be true? e.g. if switching authentication types
             return new ValidationResult<>(false, "Type mismatch: SingleUserAuthentication not found");
         }
@@ -135,7 +137,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
         private String method;
 
         public Builder(final SingleUserAuthentication singleUserAuthentication) {
-            if(singleUserAuthentication.defaultLogin != null) {
+            if (singleUserAuthentication.defaultLogin != null) {
                 this.defaultLogin = singleUserAuthentication.defaultLogin;
             }
 

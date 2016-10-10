@@ -3,11 +3,13 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.authentication;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.hp.autonomy.frontend.configuration.ConfigException;
+import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
 
 /**
  * Interface representing the configuration for an authentication method
@@ -16,8 +18,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "name")
 @JsonSubTypes({
-    @JsonSubTypes.Type(SingleUserAuthentication.class),
-    @JsonSubTypes.Type(CasAuthentication.class)
+        @JsonSubTypes.Type(SingleUserAuthentication.class),
+        @JsonSubTypes.Type(CasAuthentication.class)
 })
 @JsonIgnoreProperties("className")
 public interface Authentication<T extends Authentication<T>> extends ConfigurationComponent {
@@ -55,6 +57,7 @@ public interface Authentication<T extends Authentication<T>> extends Configurati
     /**
      * Merges this Authentication with another, by calling the merge method of all its fields.
      * For types which do not have a merge method, use values from other only when the values on this are null
+     *
      * @param other The other authentication object
      * @return A combination of this object and other
      */

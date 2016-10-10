@@ -3,14 +3,17 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.authentication;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.InputStream;
+import com.hp.autonomy.frontend.configuration.LoginTypes;
+import com.hp.autonomy.frontend.configuration.TestConfig;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -31,16 +34,16 @@ public class CasAuthenticationTest {
         final DefaultLogin defaultLogin = DefaultLogin.generateDefaultLogin();
 
         final CasConfig casConfig = new CasConfig.Builder()
-            .setCasServerLoginUrl("/login/authenticatedLogin")
-            .setCasServerUrlPrefix("prefix")
-            .setServerName("test-server")
-            .build();
+                .setCasServerLoginUrl("/login/authenticatedLogin")
+                .setCasServerUrlPrefix("prefix")
+                .setServerName("test-server")
+                .build();
 
         final CasAuthentication casAuthentication = new CasAuthentication.Builder()
-            .setCas(casConfig)
-            .setDefaultLogin(defaultLogin)
-            .setMethod(LoginTypes.CAS)
-            .build();
+                .setCas(casConfig)
+                .setDefaultLogin(defaultLogin)
+                .setMethod(LoginTypes.CAS)
+                .build();
 
         final JsonNode jsonNode = objectMapper.valueToTree(casAuthentication);
 
@@ -61,15 +64,14 @@ public class CasAuthenticationTest {
         final TestConfig testConfig = objectMapper.readValue(inputStream, TestConfig.class);
         final Authentication<?> authentication = testConfig.getAuthentication();
 
-        if(authentication instanceof CasAuthentication) {
+        if (authentication instanceof CasAuthentication) {
             final CasAuthentication casAuthentication = (CasAuthentication) authentication;
             final CasConfig cas = casAuthentication.getCas();
 
             assertThat(cas.getCasServerLoginUrl(), is("loginUrl"));
             assertThat(cas.getCasServerUrlPrefix(), is("prefix"));
             assertThat(cas.getServerName(), is("serverName"));
-        }
-        else {
+        } else {
             fail("Deserialized class not of correct type");
         }
     }

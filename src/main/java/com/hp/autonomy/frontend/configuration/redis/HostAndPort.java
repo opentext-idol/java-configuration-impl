@@ -3,7 +3,7 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.redis;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -19,6 +19,7 @@ public class HostAndPort {
 
     /**
      * Creates a new HostAndPort
+     *
      * @param host The hostname
      * @param port The port
      */
@@ -29,6 +30,7 @@ public class HostAndPort {
 
     /**
      * Creates a new HostAndPort using values from this with missing values supplied by other
+     *
      * @param other The other HostAndPort
      * @return The new merged HostAndPort
      */
@@ -38,13 +40,14 @@ public class HostAndPort {
         }
 
         return new HostAndPort(
-            host == null ? other.host : host,
-            port == null ? other.port : port
+                host == null ? other.host : host,
+                port == null ? other.port : port
         );
     }
 
     /**
      * Returns the validation state of the config
+     *
      * @return True if the hostname is not empty and the port is between 0 and 65536; false otherwise
      */
     public boolean validate() {

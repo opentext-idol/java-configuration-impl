@@ -1,4 +1,4 @@
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.redis;
 
 import org.junit.Test;
 

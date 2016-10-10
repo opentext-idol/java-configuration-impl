@@ -3,7 +3,7 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.authentication;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -29,7 +29,7 @@ public class DefaultLogin {
     public DefaultLogin merge(final DefaultLogin other) {
         final Builder builder = new Builder(this);
 
-        if(other != null) {
+        if (other != null) {
             builder.setDefaultLogin(this.defaultLogin == null ? other.defaultLogin : this.defaultLogin.merge(other.defaultLogin));
         }
 
@@ -38,6 +38,7 @@ public class DefaultLogin {
 
     /**
      * Static factory for generating pre-populated default logins
+     *
      * @return A DefaultLogin with the username "admin" and a random password
      */
     public static DefaultLogin generateDefaultLogin() {
@@ -57,7 +58,7 @@ public class DefaultLogin {
     @Accessors(chain = true)
     @NoArgsConstructor
     @JsonPOJOBuilder(withPrefix = "set")
-    public static class Builder{
+    public static class Builder {
 
         private String username;
         private String password;
@@ -71,9 +72,9 @@ public class DefaultLogin {
 
         public DefaultLogin build() {
             defaultLogin = new UsernameAndPassword.Builder()
-                .setUsername(username)
-                .setPassword(password)
-                .build();
+                    .setUsername(username)
+                    .setPassword(password)
+                    .build();
 
             return new DefaultLogin(this);
         }

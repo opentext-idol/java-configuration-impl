@@ -5,6 +5,7 @@
 
 package com.hp.autonomy.frontend.configuration;
 
+import com.hp.autonomy.frontend.configuration.authentication.AuthenticatingConfig;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -12,15 +13,14 @@ import lombok.extern.slf4j.Slf4j;
  * and remove the default login and hash passwords when writing.
  *
  * @param <T> The type of the Configuration object. A default login will be generated for the
- *           initial config file, and will be removed on subsequent writes.
- *
+ *            initial config file, and will be removed on subsequent writes.
  */
 @Slf4j
 public abstract class AbstractAuthenticatingConfigFileService<T extends Config<T> & AuthenticatingConfig<T>> extends BaseConfigFileService<T> {
 
     @Override
     public T withHashedPasswords(final T config) {
-        if(config != null) {
+        if (config != null) {
             return config.withHashedPasswords();
         }
 
@@ -29,7 +29,7 @@ public abstract class AbstractAuthenticatingConfigFileService<T extends Config<T
 
     @Override
     public T withoutDefaultLogin(final T config) {
-        if(config != null) {
+        if (config != null) {
             return config.withoutDefaultLogin();
         }
 
@@ -38,7 +38,7 @@ public abstract class AbstractAuthenticatingConfigFileService<T extends Config<T
 
     @Override
     public T generateDefaultLogin(final T config) {
-        if(config != null) {
+        if (config != null) {
             return config.generateDefaultLogin();
         }
 

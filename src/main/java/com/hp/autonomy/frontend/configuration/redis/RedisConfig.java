@@ -3,10 +3,11 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.redis;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.hp.autonomy.frontend.configuration.ConfigException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -44,9 +45,10 @@ public class RedisConfig {
 
     /**
      * Validates the configuration
+     *
      * @throws ConfigException If either:
-     * <li>address is non null and invalid, and sentinels is null or empty </li>
-     * <li>sentinels is non null and non empty and masterName is null or blank</li>
+     *                         <li>address is non null and invalid, and sentinels is null or empty </li>
+     *                         <li>sentinels is non null and non empty and masterName is null or blank</li>
      */
     public void basicValidate() throws ConfigException {
         if ((address != null && !address.validate()) && (sentinels == null || sentinels.isEmpty())) {
@@ -60,6 +62,7 @@ public class RedisConfig {
 
     /**
      * Creates a new RedisConfig using values from this with missing values supplied by other
+     *
      * @param other The other Redis configuration
      * @return The new merged Redis config
      */

@@ -3,14 +3,17 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.authentication;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.InputStream;
+import com.hp.autonomy.frontend.configuration.LoginTypes;
+import com.hp.autonomy.frontend.configuration.TestConfig;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -31,15 +34,15 @@ public class SingleUserAuthenticationTest {
         final DefaultLogin defaultLogin = DefaultLogin.generateDefaultLogin();
 
         final BCryptUsernameAndPassword singleUser = new BCryptUsernameAndPassword.Builder()
-            .setUsername("admin")
-            .setHashedPassword("$2a$12$uGikZXio88E.bl0A3oEe6eR.bAZxfzyifvQ4pAf6uLflCxUA55ONe")
-            .build();
+                .setUsername("admin")
+                .setHashedPassword("$2a$12$uGikZXio88E.bl0A3oEe6eR.bAZxfzyifvQ4pAf6uLflCxUA55ONe")
+                .build();
 
         final SingleUserAuthentication singleUserAuthentication = new SingleUserAuthentication.Builder()
-            .setSingleUser(singleUser)
-            .setDefaultLogin(defaultLogin)
-            .setMethod(LoginTypes.SINGLE_USER)
-            .build();
+                .setSingleUser(singleUser)
+                .setDefaultLogin(defaultLogin)
+                .setMethod(LoginTypes.SINGLE_USER)
+                .build();
 
         final JsonNode jsonNode = objectMapper.valueToTree(singleUserAuthentication);
 
@@ -58,14 +61,13 @@ public class SingleUserAuthenticationTest {
         final TestConfig testConfig = objectMapper.readValue(inputStream, TestConfig.class);
         final Authentication<?> authentication = testConfig.getAuthentication();
 
-        if(authentication instanceof SingleUserAuthentication) {
+        if (authentication instanceof SingleUserAuthentication) {
             final SingleUserAuthentication singleUserAuthentication = (SingleUserAuthentication) authentication;
             final BCryptUsernameAndPassword singleUser = singleUserAuthentication.getSingleUser();
 
             assertThat(singleUser.getUsername(), is("admin"));
             assertThat(singleUser.getHashedPassword(), is("$2a$12$uGikZXio88E.bl0A3oEe6eR.bAZxfzyifvQ4pAf6uLflCxUA55ONe"));
-        }
-        else {
+        } else {
             fail("Deserialized class not of correct type");
         }
     }

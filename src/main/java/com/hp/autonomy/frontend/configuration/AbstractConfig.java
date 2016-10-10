@@ -6,6 +6,7 @@
 package com.hp.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,7 +29,7 @@ public abstract class AbstractConfig<T extends AbstractConfig<T>> implements Con
         final Field[] fields = this.getClass().getDeclaredFields();
         final Map<String, ConfigurationComponent> result = new HashMap<>();
 
-        for(final Field field : fields) {
+        for (final Field field : fields) {
             final boolean oldValue = field.isAccessible();
 
             try {
@@ -36,14 +37,12 @@ public abstract class AbstractConfig<T extends AbstractConfig<T>> implements Con
                 final Object o = field.get(this);
 
                 // if o is null this is false
-                if(o instanceof ConfigurationComponent) {
+                if (o instanceof ConfigurationComponent) {
                     result.put(field.getName(), (ConfigurationComponent) o);
                 }
-            }
-            catch(IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 throw new AssertionError("Your JVM does not allow you to run this code.", e);
-            }
-            finally {
+            } finally {
                 field.setAccessible(oldValue);
             }
         }
@@ -58,10 +57,10 @@ public abstract class AbstractConfig<T extends AbstractConfig<T>> implements Con
 
         final Iterator<Map.Entry<String, ConfigurationComponent>> iterator = validationMap.entrySet().iterator();
 
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             final Map.Entry<String, ConfigurationComponent> entry = iterator.next();
 
-            if(!entry.getValue().isEnabled()) {
+            if (!entry.getValue().isEnabled()) {
                 iterator.remove();
             }
         }

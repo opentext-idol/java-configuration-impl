@@ -3,13 +3,17 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.authentication;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.hp.autonomy.frontend.configuration.ConfigException;
+import com.hp.autonomy.frontend.configuration.LoginTypes;
+import com.hp.autonomy.frontend.configuration.validation.ValidatingConfigurationComponent;
+import com.hp.autonomy.frontend.configuration.validation.ValidationResult;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,7 +39,7 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
 
     @Override
     public CasAuthentication merge(final Authentication<?> other) {
-        if(other instanceof CasAuthentication) {
+        if (other instanceof CasAuthentication) {
             final CasAuthentication castOther = (CasAuthentication) other;
             final Builder builder = new Builder(this);
 
@@ -44,15 +48,14 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
             builder.setMethod(this.method == null ? castOther.method : this.method);
 
             return builder.build();
-        }
-        else {
+        } else {
             return this;
         }
     }
 
     @Override
     public void basicValidate() throws ConfigException {
-        if(LoginTypes.CAS.equalsIgnoreCase(method)) {
+        if (LoginTypes.CAS.equalsIgnoreCase(method)) {
             cas.basicValidate();
         }
     }
@@ -73,8 +76,7 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
             cas.basicValidate();
 
             return new ValidationResult<Void>(true);
-        }
-        catch(ConfigException e) {
+        } catch (ConfigException e) {
             return new ValidationResult<>(false, "");
         }
     }
@@ -126,7 +128,7 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
 
         public Builder(final CasAuthentication casAuthentication) {
             this.cas = casAuthentication.cas;
-            if(casAuthentication.defaultLogin != null) {
+            if (casAuthentication.defaultLogin != null) {
                 this.defaultLogin = casAuthentication.defaultLogin;
             }
             this.method = casAuthentication.method;

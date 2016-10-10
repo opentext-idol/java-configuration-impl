@@ -5,7 +5,10 @@
 
 package com.hp.autonomy.frontend.configuration;
 
-class TestConfig implements AuthenticationConfig<TestConfig> {
+import com.hp.autonomy.frontend.configuration.authentication.Authentication;
+import com.hp.autonomy.frontend.configuration.authentication.AuthenticationConfig;
+
+public class TestConfig implements AuthenticationConfig<TestConfig> {
     private Authentication<?> authentication;
 
     @Override

@@ -6,7 +6,7 @@
 package com.hp.autonomy.frontend.configuration.filter;
 
 import com.hp.autonomy.frontend.configuration.ConfigService;
-import java.io.IOException;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -15,6 +15,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Servlet filter that redirects users to an error page if no configuration is available in the provided config service
@@ -40,13 +41,11 @@ public class ConfigEnvironmentVariableFilter implements Filter {
         final String configUri = contextPath + configPage;
         final String requestUri = request.getRequestURI();
 
-        if(config == null && !requestUri.equals(configUri)) {
+        if (config == null && !requestUri.equals(configUri)) {
             response.sendRedirect(configUri);
-        }
-        else if(config != null && requestUri.equals(configUri)) {
+        } else if (config != null && requestUri.equals(configUri)) {
             response.sendRedirect(contextPath);
-        }
-        else {
+        } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
     }

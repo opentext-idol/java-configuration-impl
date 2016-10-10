@@ -5,9 +5,10 @@
 
 package com.hp.autonomy.frontend.configuration;
 
-import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -60,9 +61,9 @@ public class AbstractConfigTest {
         private static final String foo = "bar";
 
         public ConcreteConfig(
-            final ConcreteConfigurationComponent host,
-            final ConcreteConfigurationComponent port,
-            final EnabledConfigurationComponent cake
+                final ConcreteConfigurationComponent host,
+                final ConcreteConfigurationComponent port,
+                final EnabledConfigurationComponent cake
         ) {
             this.host = host;
             this.port = port;
@@ -82,7 +83,8 @@ public class AbstractConfigTest {
         }
 
         @Override
-        public void basicValidate() throws ConfigException {}
+        public void basicValidate() throws ConfigException {
+        }
 
         @Override
         public ConcreteConfig merge(final ConcreteConfig other) {

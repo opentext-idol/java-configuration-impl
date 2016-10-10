@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConfigResponse<T> {
-	private T config;
-	private String configPath;
-	private String configEnvVariable;
+    private T config;
+    private String configPath;
+    private String configEnvVariable;
 }

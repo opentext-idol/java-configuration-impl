@@ -3,10 +3,11 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.validation;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class ValidationResults {
         this.map = Collections.unmodifiableMap(map);
         boolean valid = true;
 
-        for(final ValidationResult<?> result : map.values()) {
+        for (final ValidationResult<?> result : map.values()) {
             valid = valid && result.isValid();
         }
 

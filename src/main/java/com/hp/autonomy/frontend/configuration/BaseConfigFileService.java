@@ -7,6 +7,15 @@ package com.hp.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.hp.autonomy.frontend.configuration.passwords.PasswordsConfig;
+import com.hp.autonomy.frontend.configuration.validation.ConfigValidationException;
+import com.hp.autonomy.frontend.configuration.validation.ValidationResults;
+import com.hp.autonomy.frontend.configuration.validation.ValidationService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.jasypt.util.text.TextEncryptor;
+
+import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,25 +29,20 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.jasypt.util.text.TextEncryptor;
 
 /**
  * Reference implementation of {@link ConfigFileService}, which outputs configuration objects as JSON files.
  * An additional type bound is placed on the configuration object this class uses.
- *
+ * <p>
  * Clients of this API should extend {@link AbstractAuthenticatingConfigFileService} or
  * {@link AbstractUnauthenticatingConfigFileService}, depending on their needs.
- *
+ * <p>
  * This class requires that a default config file be available at runtime.
- *
+ * <p>
  * Operations on the Config object are thread safe.
  *
  * @param <T> The type of the Configuration object. If it extends {@link PasswordsConfig}, passwords will be encrypted
- *           and decrypted when the file is written and read respectively.
- *
+ *            and decrypted when the file is written and read respectively.
  */
 @Slf4j
 public abstract class BaseConfigFileService<T extends Config<T>> implements ConfigFileService<T> {
@@ -65,7 +69,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
      * Initialises the service
      *
      * @throws IllegalStateException If an error occurs which prevent service initialization
-     * @throws Exception If an unspecified error occurs
+     * @throws Exception             If an unspecified error occurs
      */
     // Exception thrown by method in library
     @SuppressWarnings("ProhibitedExceptionDeclared")
@@ -75,22 +79,20 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         T fileConfig = getEmptyConfig();
 
         boolean fileExists = false;
-        if(StringUtils.isNotBlank(configFileLocation)) {
+        if (StringUtils.isNotBlank(configFileLocation)) {
             log.debug("Using {} as config file location", configFileLocation);
 
-            try(Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(configFileLocation), "UTF-8"))){
+            try (Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(configFileLocation), "UTF-8"))) {
                 fileConfig = mapper.readValue(reader, getConfigClass());
 
-                if(fileConfig instanceof PasswordsConfig<?>) {
+                if (fileConfig instanceof PasswordsConfig<?>) {
                     fileConfig = ((PasswordsConfig<T>) fileConfig).withDecryptedPasswords(textEncryptor);
                 }
 
                 fileExists = true;
-            }
-            catch(final FileNotFoundException e) {
+            } catch (final FileNotFoundException e) {
                 log.warn("Config file not found, using empty configuration object");
-            }
-            catch(final IOException e) {
+            } catch (final IOException e) {
                 log.error("Error reading config file at {}", configFileLocation);
                 log.error("Recording stack trace", e);
                 // throw this so we don't continue to start the webapp
@@ -162,18 +164,18 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
      *
      * @return A ConfigResponse of the current config. Passwords will be encrypted and the default login wil be removed.
      */
-	@Override
-	public ConfigResponse<T> getConfigResponse() {
+    @Override
+    public ConfigResponse<T> getConfigResponse() {
         T config = this.config.get();
 
         config = withoutDefaultLogin(config);
 
-        if(config instanceof PasswordsConfig<?>) {
-            config = ((PasswordsConfig<T>)config).withoutPasswords();
+        if (config instanceof PasswordsConfig<?>) {
+            config = ((PasswordsConfig<T>) config).withoutPasswords();
         }
 
         return new ConfigResponse<>(config, getConfigFileLocation(), configFileLocation);
-	}
+    }
 
     /**
      * Validate the config with the supplied {@link ValidationService}, calls {@link #withoutDefaultLogin(Config)}
@@ -181,15 +183,15 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
      * before writing the config to a file.
      *
      * @param config The new config
-     * @throws IOException If an error occurs writing out the config file
+     * @throws IOException               If an error occurs writing out the config file
      * @throws ConfigValidationException If the supplied config is invalid.
-     * @throws Exception if an unspecified error occurs in postUpdate
+     * @throws Exception                 if an unspecified error occurs in postUpdate
      */
     @Override
     public void updateConfig(final T config) throws Exception {
         final ValidationResults validationResults = validationService.validateEnabledConfig(config);
 
-        if(!validationResults.isValid()) {
+        if (!validationResults.isValid()) {
             throw new ConfigValidationException(validationResults);
         }
 
@@ -209,7 +211,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
     }
 
     private void safePostUpdate(final T config, final T initialConfig) throws Exception {
-        try{
+        try {
             postUpdate(config);
         } catch (final ConfigException ce) {
             setConfig(initialConfig);
@@ -220,7 +222,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
     private void setConfig(final T config) {
         final T preMergeConfig = preUpdate(config);
 
-        synchronized(updateLock) {
+        synchronized (updateLock) {
             T mergedConfig = preMergeConfig.merge(this.config.get());
 
             mergedConfig = withoutDefaultLogin(mergedConfig);
@@ -230,25 +232,23 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         }
     }
 
-	private void writeOutConfigFile(final T config, final String configFileLocation) throws IOException {
-        try(Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFileLocation), "UTF-8"))){
+    private void writeOutConfigFile(final T config, final String configFileLocation) throws IOException {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFileLocation), "UTF-8"))) {
             log.debug("Writing out config file to {}", configFileLocation);
 
             T configToWrite = config;
 
-            if(configToWrite instanceof PasswordsConfig<?>) {
+            if (configToWrite instanceof PasswordsConfig<?>) {
                 configToWrite = ((PasswordsConfig<T>) configToWrite).withEncryptedPasswords(textEncryptor);
             }
 
             // TODO: This scales badly and needs rethinking
-            if(filterProvider != null) {
+            if (filterProvider != null) {
                 mapper.writer(filterProvider).writeValue(writer, configToWrite);
-            }
-            else {
+            } else {
                 mapper.writeValue(writer, configToWrite);
             }
-        }
-        catch(final IOException e) {
+        } catch (final IOException e) {
             log.error("Error writing out config file", e);
             throw e;
         }
@@ -256,7 +256,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 
     /**
      * @param systemProperty The name of the system property which stores the location
-     *                            of the config file.
+     *                       of the config file.
      */
     public void setConfigFileLocation(final String systemProperty) {
         configFileLocation = systemProperty;
@@ -272,7 +272,6 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
     /**
      * @param defaultConfigFile The path to the default config file. This should be a resource on the classpath e.g
      *                          com/example/foo/defaultConfigFile.json
-     *
      */
     public void setDefaultConfigFile(final String defaultConfigFile) {
         this.defaultConfigFile = defaultConfigFile;
@@ -287,6 +286,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 
     /**
      * If {@link T} is not a {@link PasswordsConfig}, this property need not be set.
+     *
      * @param textEncryptor The {@link TextEncryptor} used to encrypt passwords.
      */
     public void setTextEncryptor(final TextEncryptor textEncryptor) {
@@ -295,6 +295,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 
     /**
      * This property is optional if no filtering is required.
+     *
      * @param filterProvider The {@link FilterProvider} used to filter the config before writing. This must provide a
      *                       filter called "configurationFilter".
      */
@@ -311,6 +312,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 
     /**
      * Called after the Config is initialised
+     *
      * @param config The newly initialised config
      * @throws Exception
      */
@@ -330,6 +332,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 
     /**
      * Generates a default login for a new config file
+     *
      * @param config The initial config object
      * @return A copy of config with a default login, or the same config object if a default login is not required
      */
@@ -337,6 +340,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 
     /**
      * Removes the default login from the configuration object
+     *
      * @param config The initial config object
      * @return A copy of config without a default login, or the same config object if a default login is not required
      */
@@ -344,6 +348,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 
     /**
      * Hashes any passwords in the configuration object
+     *
      * @param config The initial config object
      * @return A copy of config without any plaintext passwords, or the same config object if there are no passwords
      */

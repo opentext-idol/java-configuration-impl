@@ -3,7 +3,10 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.validation;
+
+import com.hp.autonomy.frontend.configuration.Config;
+import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
 
 import java.util.Map;
 import java.util.Set;
@@ -18,16 +21,16 @@ public class ValidationServiceImpl<T extends Config<T>> implements ValidationSer
 
     /**
      * {@inheritDoc}
+     *
      * @throws IllegalArgumentException If no validator is found for the given component
      */
     @Override
     public <T extends ConfigurationComponent> ValidationResult<?> validate(final T configurationComponent) {
-        if(configurationComponent instanceof ValidatingConfigurationComponent) {
+        if (configurationComponent instanceof ValidatingConfigurationComponent) {
             final ValidatingConfigurationComponent validatingComponent = (ValidatingConfigurationComponent) configurationComponent;
 
             return validatingComponent.validate();
-        }
-        else {
+        } else {
             // getClass on a T returns a Class<T>
             @SuppressWarnings("unchecked")
             final Class<T> componentClass = (Class<T>) configurationComponent.getClass();
@@ -36,10 +39,9 @@ public class ValidationServiceImpl<T extends Config<T>> implements ValidationSer
             @SuppressWarnings("unchecked")
             final Validator<T> validator = (Validator<T>) validators.get(componentClass);
 
-            if(validator != null) {
+            if (validator != null) {
                 return validator.validate(configurationComponent);
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("No validator for class " + componentClass.getCanonicalName());
             }
         }
@@ -58,7 +60,7 @@ public class ValidationServiceImpl<T extends Config<T>> implements ValidationSer
     private ValidationResults validateConfig(final Map<String, ConfigurationComponent> components) {
         final ValidationResults.Builder builder = new ValidationResults.Builder();
 
-        for(final String component : components.keySet()) {
+        for (final String component : components.keySet()) {
             final ConfigurationComponent configurationComponent = components.get(component);
 
             final ValidationResult<?> result = validate(configurationComponent);
@@ -71,12 +73,13 @@ public class ValidationServiceImpl<T extends Config<T>> implements ValidationSer
 
     /**
      * Set the validators used by the service.  This will clear any existing validators.  This method is thread safe.
+     *
      * @param validators The new validators to be used by the service
      */
     public void setValidators(final Set<Validator<?>> validators) {
         this.validators.clear();
 
-        for(final Validator<?> validator : validators) {
+        for (final Validator<?> validator : validators) {
             // this ensures we map ConfigurationComponent classes to validators of the same class
             this.validators.put(validator.getSupportedClass(), validator);
         }

@@ -3,10 +3,11 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.authentication;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.hp.autonomy.frontend.configuration.ConfigException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +31,7 @@ public class CasConfig {
     }
 
     public CasConfig merge(final CasConfig casConfig) {
-        if(casConfig != null) {
+        if (casConfig != null) {
             final Builder builder = new Builder();
 
             builder.setCasServerLoginUrl(this.casServerLoginUrl == null ? casConfig.casServerLoginUrl : this.casServerLoginUrl);
@@ -38,16 +39,15 @@ public class CasConfig {
             builder.setServerName(this.serverName == null ? casConfig.serverName : this.serverName);
 
             return builder.build();
-        }
-        else {
+        } else {
             return this;
         }
     }
 
     public void basicValidate() throws ConfigException {
-        if(StringUtils.isBlank(this.getCasServerLoginUrl())
+        if (StringUtils.isBlank(this.getCasServerLoginUrl())
                 || StringUtils.isBlank(this.getCasServerUrlPrefix())
-                || StringUtils.isBlank(this.getServerName())){
+                || StringUtils.isBlank(this.getServerName())) {
             throw new ConfigException("Login", "CAS attributes have not been defined in the config file. Please specify them in the config file");
         }
     }

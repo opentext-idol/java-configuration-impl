@@ -3,10 +3,12 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.authentication;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
+import com.hp.autonomy.frontend.configuration.validation.ValidationResult;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +41,7 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
     }
 
     public BCryptUsernameAndPassword merge(final BCryptUsernameAndPassword usernameAndPassword) {
-        if(usernameAndPassword != null) {
+        if (usernameAndPassword != null) {
             final Builder builder = new Builder();
 
             builder.setUsername(username == null ? usernameAndPassword.username : username);
@@ -49,8 +51,7 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
             builder.setPasswordRedacted(false);
 
             return builder.build();
-        }
-        else {
+        } else {
             return this;
         }
     }
@@ -69,7 +70,7 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         builder.setPlaintextPassword(null);
         builder.setCurrentPassword(null);
 
-        if(hashedPassword != null && StringUtils.isNotBlank(plaintextPassword)) {
+        if (hashedPassword != null && StringUtils.isNotBlank(plaintextPassword)) {
             builder.setHashedPassword(BCrypt.hashpw(plaintextPassword, BCrypt.gensalt(BCRYPT_LOG_HASHING_ROUNDS)));
         }
 
@@ -83,28 +84,27 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
     /**
      * Validates this component by comparing the current password against either a default login or an existing single
      * user
+     *
      * @param existingSingleUser The current single user
-     * @param defaultLogin The current default credentials.  May be null
+     * @param defaultLogin       The current default credentials.  May be null
      * @return A true {@link ValidationResult} if valid, or false otherwise.  The false result includes a detail message
      */
     public ValidationResult<?> validate(final BCryptUsernameAndPassword existingSingleUser, final UsernameAndPassword defaultLogin) {
-        if(passwordRedacted) {
+        if (passwordRedacted) {
             return new ValidationResult<>(true);
         }
 
         final boolean valid;
 
-        if(defaultLogin.getPassword() != null) {
+        if (defaultLogin.getPassword() != null) {
             valid = currentPassword.equals(defaultLogin.getPassword());
-        }
-        else {
+        } else {
             valid = BCrypt.checkpw(currentPassword, existingSingleUser.hashedPassword);
         }
 
-        if(valid) {
+        if (valid) {
             return new ValidationResult<>(true);
-        }
-        else {
+        } else {
             return new ValidationResult<>(false, "The current password is incorrect");
         }
     }
@@ -114,7 +114,7 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
 
         builder.plaintextPassword = null;
 
-        if(StringUtils.isNotEmpty(builder.hashedPassword)) {
+        if (StringUtils.isNotEmpty(builder.hashedPassword)) {
             builder.hashedPassword = null;
             builder.passwordRedacted = true;
         }
@@ -132,7 +132,8 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         private String hashedPassword;
         private boolean passwordRedacted;
 
-        public Builder() {}
+        public Builder() {
+        }
 
         public Builder(final BCryptUsernameAndPassword usernameAndPassword) {
             this.username = usernameAndPassword.username;
