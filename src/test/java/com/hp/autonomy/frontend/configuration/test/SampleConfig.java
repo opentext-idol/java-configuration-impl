@@ -2,7 +2,7 @@ package com.hp.autonomy.frontend.configuration.test;
 
 import com.hp.autonomy.frontend.configuration.Config;
 import com.hp.autonomy.frontend.configuration.ConfigException;
-import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
+import com.hp.autonomy.frontend.configuration.validation.OptionalConfigurationComponent;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
@@ -14,18 +14,17 @@ public class SampleConfig implements Config<SampleConfig> {
     private SomeObject someObject;
 
     @Override
-    public Map<String, ConfigurationComponent> getValidationMap() {
+    public Map<String, OptionalConfigurationComponent<?>> getValidationMap() {
         return null;
     }
 
     @Override
-    public Map<String, ConfigurationComponent> getEnabledValidationMap() {
+    public Map<String, OptionalConfigurationComponent<?>> getEnabledValidationMap() {
         return null;
     }
 
     @Override
-    public void basicValidate() throws ConfigException {
-
+    public void basicValidate(final String section) throws ConfigException {
     }
 
     @Override
@@ -64,7 +63,7 @@ public class SampleConfig implements Config<SampleConfig> {
         this.someObject = someObject;
     }
 
-    @SuppressWarnings("InnerClassTooDeeplyNested")
+    @SuppressWarnings({"InnerClassTooDeeplyNested", "WeakerAccess"})
     public static class SomeObject {
         private String someNestedField;
 

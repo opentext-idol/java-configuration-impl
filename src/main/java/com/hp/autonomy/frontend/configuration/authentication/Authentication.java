@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.hp.autonomy.frontend.configuration.ConfigException;
-import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
+import com.hp.autonomy.frontend.configuration.validation.OptionalConfigurationComponent;
 
 /**
  * Interface representing the configuration for an authentication method
@@ -22,7 +22,7 @@ import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
         @JsonSubTypes.Type(CasAuthentication.class)
 })
 @JsonIgnoreProperties("className")
-public interface Authentication<T extends Authentication<T>> extends ConfigurationComponent {
+public interface Authentication<T extends Authentication<T>> extends OptionalConfigurationComponent<T> {
 
     /**
      * @return The authentication method to use
@@ -62,6 +62,4 @@ public interface Authentication<T extends Authentication<T>> extends Configurati
      * @return A combination of this object and other
      */
     T merge(Authentication<?> other);
-
-    void basicValidate() throws ConfigException;
 }

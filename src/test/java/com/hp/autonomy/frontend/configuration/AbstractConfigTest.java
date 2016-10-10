@@ -5,6 +5,7 @@
 
 package com.hp.autonomy.frontend.configuration;
 
+import com.hp.autonomy.frontend.configuration.validation.OptionalConfigurationComponent;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class AbstractConfigTest {
 
     @Test
     public void testGetValidationMap() {
-        final Map<String, ConfigurationComponent> map = concreteConfig.getValidationMap();
+        final Map<String, OptionalConfigurationComponent<?>> map = concreteConfig.getValidationMap();
 
         assertThat(map.keySet(), hasSize(3));
 
@@ -44,7 +45,7 @@ public class AbstractConfigTest {
 
     @Test
     public void testGetEnabledValidationMap() {
-        final Map<String, ConfigurationComponent> map = concreteConfig.getEnabledValidationMap();
+        final Map<String, OptionalConfigurationComponent<?>> map = concreteConfig.getEnabledValidationMap();
 
         assertThat(map.keySet(), hasSize(1));
 
@@ -53,14 +54,15 @@ public class AbstractConfigTest {
         assertEquals(cake, map.get("cake"));
     }
 
+    @SuppressWarnings("unused")
     private static class ConcreteConfig extends AbstractConfig<ConcreteConfig> {
 
         private final ConcreteConfigurationComponent host;
         private final ConcreteConfigurationComponent port;
         private final EnabledConfigurationComponent cake;
-        private static final String foo = "bar";
+        private static final String FOO = "bar";
 
-        public ConcreteConfig(
+        ConcreteConfig(
                 final ConcreteConfigurationComponent host,
                 final ConcreteConfigurationComponent port,
                 final EnabledConfigurationComponent cake
@@ -79,11 +81,11 @@ public class AbstractConfigTest {
         }
 
         public String getFoo() {
-            return foo;
+            return FOO;
         }
 
         @Override
-        public void basicValidate() throws ConfigException {
+        public void basicValidate(final String section) throws ConfigException {
         }
 
         @Override
@@ -92,7 +94,16 @@ public class AbstractConfigTest {
         }
     }
 
-    private static class ConcreteConfigurationComponent implements ConfigurationComponent {
+    private static class ConcreteConfigurationComponent implements OptionalConfigurationComponent<ConcreteConfigurationComponent> {
+        @Override
+        public ConcreteConfigurationComponent merge(final ConcreteConfigurationComponent other) {
+            return null;
+        }
+
+        @Override
+        public void basicValidate(final String section) throws ConfigException {
+
+        }
 
         @Override
         public boolean isEnabled() {
@@ -100,7 +111,16 @@ public class AbstractConfigTest {
         }
     }
 
-    private static class EnabledConfigurationComponent implements ConfigurationComponent {
+    private static class EnabledConfigurationComponent implements OptionalConfigurationComponent<EnabledConfigurationComponent> {
+        @Override
+        public EnabledConfigurationComponent merge(final EnabledConfigurationComponent other) {
+            return null;
+        }
+
+        @Override
+        public void basicValidate(final String section) throws ConfigException {
+
+        }
 
         @Override
         public boolean isEnabled() {

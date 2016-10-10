@@ -5,19 +5,17 @@
 
 package com.hp.autonomy.frontend.configuration.validation;
 
-import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
-
 /**
  * A Validator is responsible for validating configuration components which have external dependencies.
  *
  * @param <T> The type of objects this Validator can validate
  */
-public interface Validator<T extends ConfigurationComponent> {
+public interface Validator<T extends OptionalConfigurationComponent<T>> {
 
     /**
-     * Validates the given ConfigurationComponent
+     * Validates the given OptionalConfigurationComponent
      *
-     * @param config The ConfigurationComponent to validate
+     * @param config The OptionalConfigurationComponent to validate
      * @return The result of the validation
      */
     ValidationResult<?> validate(T config);

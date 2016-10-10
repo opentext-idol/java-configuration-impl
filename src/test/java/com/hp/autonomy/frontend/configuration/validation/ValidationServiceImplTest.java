@@ -5,10 +5,11 @@
 
 package com.hp.autonomy.frontend.configuration.validation;
 
-import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
+import com.hp.autonomy.frontend.configuration.ConfigException;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -23,7 +24,7 @@ public class ValidationServiceImplTest {
     public void setUp() {
         validationService = new ValidationServiceImpl();
 
-        final HashSet<Validator<?>> validators = new HashSet<>();
+        final Collection<Validator<?>> validators = new HashSet<>();
         validators.add(new ElvisValidator());
         validators.add(new CakeValidator());
 
@@ -51,13 +52,22 @@ public class ValidationServiceImplTest {
         }
     }
 
-    private static class ElvisConfiguration implements ConfigurationComponent {
+    private static class ElvisConfiguration implements OptionalConfigurationComponent<ElvisConfiguration> {
 
         @Override
         public boolean isEnabled() {
             return true;
         }
 
+        @Override
+        public ElvisConfiguration merge(final ElvisConfiguration other) {
+            return null;
+        }
+
+        @Override
+        public void basicValidate(final String section) throws ConfigException {
+
+        }
     }
 
     private static class CakeValidator implements Validator<CakeConfiguration> {
@@ -73,11 +83,21 @@ public class ValidationServiceImplTest {
         }
     }
 
-    private static class CakeConfiguration implements ConfigurationComponent {
+    private static class CakeConfiguration implements OptionalConfigurationComponent<CakeConfiguration> {
 
         @Override
         public boolean isEnabled() {
             return true;
+        }
+
+        @Override
+        public CakeConfiguration merge(final CakeConfiguration other) {
+            return null;
+        }
+
+        @Override
+        public void basicValidate(final String section) throws ConfigException {
+
         }
     }
 }

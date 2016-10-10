@@ -19,42 +19,44 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Data
-@JsonDeserialize(builder = CasAuthentication.Builder.class)
-@JsonTypeName("CasAuthentication")
 /**
  * {@link Authentication} for using CAS
  */
-public class CasAuthentication implements Authentication<CasAuthentication>, ValidatingConfigurationComponent {
+@SuppressWarnings({"WeakerAccess", "InstanceVariableOfConcreteClass"})
+@Data
+@JsonDeserialize(builder = CasAuthentication.Builder.class)
+@JsonTypeName("CasAuthentication")
+public class CasAuthentication implements Authentication<CasAuthentication>, ValidatingConfigurationComponent<CasAuthentication> {
 
     private final DefaultLogin defaultLogin;
     private final String method;
     private final CasConfig cas;
 
     private CasAuthentication(final Builder builder) {
-        this.cas = builder.cas;
-        this.defaultLogin = builder.defaultLogin;
-        this.method = builder.method;
+        cas = builder.cas;
+        defaultLogin = builder.defaultLogin;
+        method = builder.method;
     }
 
+    @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass"})
     @Override
     public CasAuthentication merge(final Authentication<?> other) {
-        if (other instanceof CasAuthentication) {
-            final CasAuthentication castOther = (CasAuthentication) other;
-            final Builder builder = new Builder(this);
-
-            builder.setDefaultLogin(this.defaultLogin == null ? castOther.defaultLogin : this.defaultLogin.merge(castOther.defaultLogin));
-            builder.setCas(this.cas == null ? castOther.cas : this.cas.merge(castOther.cas));
-            builder.setMethod(this.method == null ? castOther.method : this.method);
-
-            return builder.build();
-        } else {
-            return this;
-        }
+        return other instanceof CasAuthentication ? merge((CasAuthentication) other) : this;
     }
 
     @Override
-    public void basicValidate() throws ConfigException {
+    public CasAuthentication merge(final CasAuthentication other) {
+        final Builder builder = new Builder(this);
+
+        builder.setDefaultLogin(defaultLogin == null ? other.defaultLogin : defaultLogin.merge(other.defaultLogin));
+        builder.setCas(cas == null ? other.cas : cas.merge(other.cas));
+        builder.setMethod(method == null ? other.method : method);
+
+        return builder.build();
+    }
+
+    @Override
+    public void basicValidate(final String section) throws ConfigException {
         if (LoginTypes.CAS.equalsIgnoreCase(method)) {
             cas.basicValidate();
         }
@@ -76,8 +78,8 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
             cas.basicValidate();
 
             return new ValidationResult<Void>(true);
-        } catch (ConfigException e) {
-            return new ValidationResult<>(false, "");
+        } catch (final ConfigException e) {
+            return new ValidationResult<>(false, e.getMessage());
         }
     }
 
@@ -127,11 +129,11 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
         private String method;
 
         public Builder(final CasAuthentication casAuthentication) {
-            this.cas = casAuthentication.cas;
+            cas = casAuthentication.cas;
             if (casAuthentication.defaultLogin != null) {
-                this.defaultLogin = casAuthentication.defaultLogin;
+                defaultLogin = casAuthentication.defaultLogin;
             }
-            this.method = casAuthentication.method;
+            method = casAuthentication.method;
         }
 
         public CasAuthentication build() {

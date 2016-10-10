@@ -20,8 +20,9 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * {@link Authentication} object for a single username and passowrd
+ * {@link Authentication} object for a single username and password
  */
+@SuppressWarnings({"InstanceofConcreteClass", "WeakerAccess", "InstanceVariableOfConcreteClass"})
 @Data
 @JsonDeserialize(builder = SingleUserAuthentication.Builder.class)
 @JsonTypeName("SingleUserAuthentication")
@@ -32,9 +33,9 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
     private final String method;
 
     private SingleUserAuthentication(final Builder builder) {
-        this.defaultLogin = builder.defaultLogin;
-        this.singleUser = builder.singleUser;
-        this.method = builder.method;
+        defaultLogin = builder.defaultLogin;
+        singleUser = builder.singleUser;
+        method = builder.method;
     }
 
     @Override
@@ -83,27 +84,27 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
         return builder.build();
     }
 
+    @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass"})
     @Override
     public SingleUserAuthentication merge(final Authentication<?> other) {
-        if (other instanceof SingleUserAuthentication) {
-            final SingleUserAuthentication castOther = (SingleUserAuthentication) other;
-
-            final Builder builder = new Builder(this);
-
-            builder.setDefaultLogin(this.defaultLogin == null ? castOther.defaultLogin : this.defaultLogin.merge(castOther.defaultLogin));
-            builder.setSingleUser(this.singleUser == null ? castOther.singleUser : this.singleUser.merge(castOther.singleUser));
-            builder.setMethod(this.method == null ? castOther.method : this.method);
-
-            return builder.build();
-        } else {
-            return this;
-        }
+        return other instanceof SingleUserAuthentication ? merge((SingleUserAuthentication) other) : this;
     }
 
     @Override
-    public void basicValidate() throws ConfigException {
+    public SingleUserAuthentication merge(final SingleUserAuthentication other) {
+        final Builder builder = new Builder(this);
+
+        builder.setDefaultLogin(defaultLogin == null ? other.defaultLogin : defaultLogin.merge(other.defaultLogin));
+        builder.setSingleUser(singleUser == null ? other.singleUser : singleUser.merge(other.singleUser));
+        builder.setMethod(method == null ? other.method : method);
+
+        return builder.build();
+    }
+
+    @Override
+    public void basicValidate(final String section) throws ConfigException {
         if (LoginTypes.SINGLE_USER.equalsIgnoreCase(method)) {
-            singleUser.basicValidate();
+            singleUser.basicValidate(section);
         }
     }
 
@@ -113,18 +114,20 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
         return true;
     }
 
+    @SuppressWarnings("CastToConcreteClass")
     public ValidationResult<?> validate(final ConfigService<? extends AuthenticationConfig<?>> configService) {
         final Authentication<?> authentication = configService.getConfig().getAuthentication();
 
         if (authentication instanceof SingleUserAuthentication) {
             final SingleUserAuthentication current = (SingleUserAuthentication) authentication;
-            return singleUser.validate(current.getSingleUser(), current.getDefaultLogin());
+            return singleUser.validate(current.singleUser, current.getDefaultLogin());
         } else {
             // TODO: should this be true? e.g. if switching authentication types
             return new ValidationResult<>(false, "Type mismatch: SingleUserAuthentication not found");
         }
     }
 
+    @SuppressWarnings("InstanceVariableOfConcreteClass")
     @NoArgsConstructor
     @JsonPOJOBuilder(withPrefix = "set")
     @Setter
@@ -138,11 +141,11 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
 
         public Builder(final SingleUserAuthentication singleUserAuthentication) {
             if (singleUserAuthentication.defaultLogin != null) {
-                this.defaultLogin = singleUserAuthentication.defaultLogin;
+                defaultLogin = singleUserAuthentication.defaultLogin;
             }
 
-            this.singleUser = singleUserAuthentication.singleUser;
-            this.method = singleUserAuthentication.method;
+            singleUser = singleUserAuthentication.singleUser;
+            method = singleUserAuthentication.method;
         }
 
         public SingleUserAuthentication build() {

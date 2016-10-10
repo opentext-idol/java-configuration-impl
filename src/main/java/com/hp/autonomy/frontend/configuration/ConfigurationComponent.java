@@ -1,17 +1,29 @@
 /*
- * Copyright 2013-2015 Hewlett-Packard Development Company, L.P.
+ * Copyright 2015 Hewlett-Packard Development Company, L.P.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
 package com.hp.autonomy.frontend.configuration;
 
-import com.hp.autonomy.frontend.configuration.validation.Validator;
+@SuppressWarnings("WeakerAccess")
+public interface ConfigurationComponent<C extends ConfigurationComponent<C>> {
+    /**
+     * Combine this Config with another of the same type and returns a new Config.
+     * <p>
+     * The new config will have the same attributes as this config, with missing attributes supplied by other.
+     * <p>
+     * Sub components of the Config should be merged where possible.
+     *
+     * @param other The configuration to merge with.
+     * @return A new Config which is a combination of this and other
+     */
+    C merge(C other);
 
-/**
- * A sub component of a Configuration object which is designed for use with a {@link Validator}
- */
-public interface ConfigurationComponent {
-
-    boolean isEnabled();
-
+    /**
+     * Perform a basic validation of the internals of this Config.  This method should not rely on
+     * external services.
+     *
+     * @throws ConfigException If validation fails.
+     */
+    void basicValidate(String section) throws ConfigException;
 }

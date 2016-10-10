@@ -6,20 +6,19 @@
 package com.hp.autonomy.frontend.configuration.validation;
 
 import com.hp.autonomy.frontend.configuration.Config;
-import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
 
 /**
  * A service which allows validation of configurations and configuration components
  *
- * @param <T> The type of the config
+ * @param <C> The type of the config
  */
-public interface ValidationService<T extends Config<T>> {
+public interface ValidationService<C extends Config<C>> {
 
     /**
      * @param config The config to validate
      * @return The results of the validation
      */
-    ValidationResults validateConfig(T config);
+    ValidationResults validateConfig(C config);
 
     /**
      * Validate the enabled sections of a config.
@@ -27,15 +26,14 @@ public interface ValidationService<T extends Config<T>> {
      * @param config The config to be validated
      * @return The results of the validation
      */
-    ValidationResults validateEnabledConfig(T config);
+    ValidationResults validateEnabledConfig(C config);
 
     /**
      * Validate a configuration component
      *
      * @param configurationComponent The component to validate
-     * @param <E>                    The type of the configuration component
      * @return true if the component is valid; false otherwise.
      */
-    <E extends ConfigurationComponent> ValidationResult<?> validate(final E configurationComponent);
+    ValidationResult<?> validate(final OptionalConfigurationComponent<?> configurationComponent);
 
 }

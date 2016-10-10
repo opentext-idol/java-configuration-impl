@@ -125,7 +125,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         }
 
         try {
-            fileConfig.basicValidate();
+            fileConfig.basicValidate("Root");
         } catch (final ConfigException e) {
             log.error("Config validation failed in " + e);
             throw new IllegalStateException("Could not initialize configuration", e);

@@ -6,15 +6,14 @@
 package com.hp.autonomy.frontend.configuration.validation;
 
 import com.hp.autonomy.frontend.configuration.Config;
-import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Reference implementation of ValidationService
  */
+@SuppressWarnings("WeakerAccess")
 public class ValidationServiceImpl<T extends Config<T>> implements ValidationService<T> {
 
     private final Map<Class<?>, Validator<?>> validators = new ConcurrentHashMap<>();
@@ -25,22 +24,18 @@ public class ValidationServiceImpl<T extends Config<T>> implements ValidationSer
      * @throws IllegalArgumentException If no validator is found for the given component
      */
     @Override
-    public <T extends ConfigurationComponent> ValidationResult<?> validate(final T configurationComponent) {
+    public ValidationResult<?> validate(final OptionalConfigurationComponent<?> configurationComponent) {
         if (configurationComponent instanceof ValidatingConfigurationComponent) {
-            final ValidatingConfigurationComponent validatingComponent = (ValidatingConfigurationComponent) configurationComponent;
-
+            @SuppressWarnings("rawtypes")
+            final ValidatingConfigurationComponent<?> validatingComponent = (ValidatingConfigurationComponent) configurationComponent;
             return validatingComponent.validate();
         } else {
-            // getClass on a T returns a Class<T>
-            @SuppressWarnings("unchecked")
-            final Class<T> componentClass = (Class<T>) configurationComponent.getClass();
-
-            // get(Class<T extend ConfigurationComponent<T>>) will always return a validator for the class
-            @SuppressWarnings("unchecked")
-            final Validator<T> validator = (Validator<T>) validators.get(componentClass);
-
+            final Class<?> componentClass = configurationComponent.getClass();
+            final Validator<?> validator = validators.get(componentClass);
             if (validator != null) {
-                return validator.validate(configurationComponent);
+                @SuppressWarnings({"unchecked", "rawtypes"})
+                final ValidationResult<?> validationResult = ((Validator) validator).validate(configurationComponent);
+                return validationResult;
             } else {
                 throw new IllegalArgumentException("No validator for class " + componentClass.getCanonicalName());
             }
@@ -57,15 +52,15 @@ public class ValidationServiceImpl<T extends Config<T>> implements ValidationSer
         return validateConfig(config.getEnabledValidationMap());
     }
 
-    private ValidationResults validateConfig(final Map<String, ConfigurationComponent> components) {
+    private ValidationResults validateConfig(final Map<String, OptionalConfigurationComponent<?>> components) {
         final ValidationResults.Builder builder = new ValidationResults.Builder();
 
-        for (final String component : components.keySet()) {
-            final ConfigurationComponent configurationComponent = components.get(component);
+        for (final Map.Entry<String, OptionalConfigurationComponent<?>> stringOptionalConfigurationComponentEntry : components.entrySet()) {
+            final OptionalConfigurationComponent<?> optionalConfigurationComponent = stringOptionalConfigurationComponentEntry.getValue();
 
-            final ValidationResult<?> result = validate(configurationComponent);
+            final ValidationResult<?> result = validate(optionalConfigurationComponent);
 
-            builder.put(component, result);
+            builder.put(stringOptionalConfigurationComponentEntry.getKey(), result);
         }
 
         return builder.build();
@@ -76,11 +71,11 @@ public class ValidationServiceImpl<T extends Config<T>> implements ValidationSer
      *
      * @param validators The new validators to be used by the service
      */
-    public void setValidators(final Set<Validator<?>> validators) {
+    public void setValidators(final Iterable<Validator<?>> validators) {
         this.validators.clear();
 
         for (final Validator<?> validator : validators) {
-            // this ensures we map ConfigurationComponent classes to validators of the same class
+            // this ensures we map OptionalConfigurationComponent classes to validators of the same class
             this.validators.put(validator.getSupportedClass(), validator);
         }
     }

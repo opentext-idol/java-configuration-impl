@@ -7,7 +7,8 @@ package com.hp.autonomy.frontend.configuration.authentication;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
+import com.hp.autonomy.frontend.configuration.ConfigException;
+import com.hp.autonomy.frontend.configuration.validation.OptionalConfigurationComponent;
 import com.hp.autonomy.frontend.configuration.validation.ValidationResult;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,10 +20,11 @@ import org.mindrot.jbcrypt.BCrypt;
 /**
  * Configuration object for a username and password where the password is hashed using BCrypt
  */
+@SuppressWarnings("WeakerAccess")
 @Getter
 @EqualsAndHashCode
 @JsonDeserialize(builder = BCryptUsernameAndPassword.Builder.class)
-public class BCryptUsernameAndPassword implements ConfigurationComponent {
+public class BCryptUsernameAndPassword implements OptionalConfigurationComponent<BCryptUsernameAndPassword> {
 
     private static final int BCRYPT_LOG_HASHING_ROUNDS = 10;
 
@@ -33,21 +35,22 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
     private final boolean passwordRedacted;
 
     private BCryptUsernameAndPassword(final Builder builder) {
-        this.username = builder.username;
-        this.currentPassword = builder.currentPassword;
-        this.plaintextPassword = builder.plaintextPassword;
-        this.hashedPassword = builder.hashedPassword;
-        this.passwordRedacted = builder.passwordRedacted;
+        username = builder.username;
+        currentPassword = builder.currentPassword;
+        plaintextPassword = builder.plaintextPassword;
+        hashedPassword = builder.hashedPassword;
+        passwordRedacted = builder.passwordRedacted;
     }
 
+    @Override
     public BCryptUsernameAndPassword merge(final BCryptUsernameAndPassword usernameAndPassword) {
         if (usernameAndPassword != null) {
             final Builder builder = new Builder();
 
             builder.setUsername(username == null ? usernameAndPassword.username : username);
-            builder.setHashedPassword(passwordRedacted || hashedPassword == null ? usernameAndPassword.hashedPassword : this.hashedPassword);
-            builder.setCurrentPassword(passwordRedacted || currentPassword == null ? usernameAndPassword.currentPassword : this.currentPassword);
-            builder.setPlaintextPassword(passwordRedacted || plaintextPassword == null ? usernameAndPassword.plaintextPassword : this.plaintextPassword);
+            builder.setHashedPassword(passwordRedacted || hashedPassword == null ? usernameAndPassword.hashedPassword : hashedPassword);
+            builder.setCurrentPassword(passwordRedacted || currentPassword == null ? usernameAndPassword.currentPassword : currentPassword);
+            builder.setPlaintextPassword(passwordRedacted || plaintextPassword == null ? usernameAndPassword.plaintextPassword : plaintextPassword);
             builder.setPasswordRedacted(false);
 
             return builder.build();
@@ -77,8 +80,11 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         return builder.build();
     }
 
-    public boolean basicValidate() {
-        return username != null;
+    @Override
+    public void basicValidate(final String section) throws ConfigException {
+        if (username == null) {
+            throw new ConfigException(section, "No username specified");
+        }
     }
 
     /**
@@ -94,19 +100,8 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
             return new ValidationResult<>(true);
         }
 
-        final boolean valid;
-
-        if (defaultLogin.getPassword() != null) {
-            valid = currentPassword.equals(defaultLogin.getPassword());
-        } else {
-            valid = BCrypt.checkpw(currentPassword, existingSingleUser.hashedPassword);
-        }
-
-        if (valid) {
-            return new ValidationResult<>(true);
-        } else {
-            return new ValidationResult<>(false, "The current password is incorrect");
-        }
+        final boolean valid = defaultLogin.getPassword() != null ? currentPassword.equals(defaultLogin.getPassword()) : BCrypt.checkpw(currentPassword, existingSingleUser.hashedPassword);
+        return valid ? new ValidationResult<>(true) : new ValidationResult<>(false, "The current password is incorrect");
     }
 
     public BCryptUsernameAndPassword withoutPasswords() {
@@ -136,10 +131,10 @@ public class BCryptUsernameAndPassword implements ConfigurationComponent {
         }
 
         public Builder(final BCryptUsernameAndPassword usernameAndPassword) {
-            this.username = usernameAndPassword.username;
-            this.currentPassword = usernameAndPassword.currentPassword;
-            this.plaintextPassword = usernameAndPassword.plaintextPassword;
-            this.hashedPassword = usernameAndPassword.hashedPassword;
+            username = usernameAndPassword.username;
+            currentPassword = usernameAndPassword.currentPassword;
+            plaintextPassword = usernameAndPassword.plaintextPassword;
+            hashedPassword = usernameAndPassword.hashedPassword;
         }
 
         public BCryptUsernameAndPassword build() {
