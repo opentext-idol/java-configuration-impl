@@ -15,7 +15,7 @@ public class SampleConfigFileService extends BaseConfigFileService<SampleConfig>
 
     @Override
     public SampleConfig getEmptyConfig() {
-        return new SampleConfig();
+        return new SampleConfig(null, null, null);
     }
 
     @Override

@@ -95,7 +95,7 @@ public class ConfigFileServiceTest {
         assertNotNull(sampleConfig);
         assertNotNull(sampleConfig.getSomeField());
         assertNotNull(sampleConfig.getSomeNewField());
-        assertNotNull(sampleConfig.getSomeObject());
-        assertEquals("y", sampleConfig.getSomeObject().getSomeNestedField());
+        assertNotNull(sampleConfig.getSomeComponent());
+        assertEquals("y", sampleConfig.getSomeComponent().getSomeNestedField());
     }
 }

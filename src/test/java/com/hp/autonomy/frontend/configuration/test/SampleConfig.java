@@ -1,17 +1,25 @@
 package com.hp.autonomy.frontend.configuration.test;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.Config;
 import com.hp.autonomy.frontend.configuration.ConfigException;
+import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
+import com.hp.autonomy.frontend.configuration.ConfigurationUtils;
 import com.hp.autonomy.frontend.configuration.validation.OptionalConfigurationComponent;
-import org.apache.commons.lang.StringUtils;
+import lombok.Getter;
+import lombok.experimental.Builder;
 
 import java.util.Map;
 
 @SuppressWarnings("unused")
+@Getter
+@Builder
+@JsonDeserialize(builder = SampleConfig.SampleConfigBuilder.class)
 public class SampleConfig implements Config<SampleConfig> {
     private String someField;
     private String someNewField;
-    private SomeObject someObject;
+    private SomeComponent someComponent;
 
     @Override
     public Map<String, OptionalConfigurationComponent<?>> getValidationMap() {
@@ -25,54 +33,49 @@ public class SampleConfig implements Config<SampleConfig> {
 
     @Override
     public void basicValidate(final String section) throws ConfigException {
+        ConfigurationUtils.basicValidate(someComponent, section);
     }
 
     @Override
     public SampleConfig merge(final SampleConfig other) {
-        someField = StringUtils.defaultIfEmpty(someField, other.someField);
-        someNewField = StringUtils.defaultIfEmpty(someNewField, other.someNewField);
-        if (someObject == null) {
-            someObject = new SomeObject();
-        }
-        someObject.someNestedField = StringUtils.defaultIfEmpty(someObject.someNestedField, other.someObject.someNestedField);
-
-        return this;
+        return ConfigurationUtils.mergeConfiguration(this, other, () -> {
+            return builder()
+                    .someField(ConfigurationUtils.mergeField(someField, other.someField))
+                    .someNewField(ConfigurationUtils.mergeField(someNewField, other.someNewField))
+                    .someComponent(ConfigurationUtils.mergeComponent(someComponent, other.someComponent))
+                    .build();
+        });
     }
 
-    public String getSomeField() {
-        return someField;
-    }
-
-    public void setSomeField(final String someField) {
-        this.someField = someField;
-    }
-
-    public String getSomeNewField() {
-        return someNewField;
-    }
-
-    public void setSomeNewField(final String someNewField) {
-        this.someNewField = someNewField;
-    }
-
-    public SomeObject getSomeObject() {
-        return someObject;
-    }
-
-    public void setSomeObject(final SomeObject someObject) {
-        this.someObject = someObject;
+    @SuppressWarnings("WeakerAccess")
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class SampleConfigBuilder {
     }
 
     @SuppressWarnings({"InnerClassTooDeeplyNested", "WeakerAccess"})
-    public static class SomeObject {
+    @Getter
+    @Builder
+    @JsonDeserialize(builder = SomeComponent.SomeComponentBuilder.class)
+    public static class SomeComponent implements ConfigurationComponent<SomeComponent> {
         private String someNestedField;
 
-        public String getSomeNestedField() {
-            return someNestedField;
+        @Override
+        public SomeComponent merge(final SomeComponent other) {
+            return ConfigurationUtils.mergeConfiguration(this, other, () -> {
+                return builder()
+                        .someNestedField(ConfigurationUtils.mergeField(someNestedField, other.someNestedField))
+                        .build();
+            });
         }
 
-        public void setSomeNestedField(final String someNestedField) {
-            this.someNestedField = someNestedField;
+        @Override
+        public void basicValidate(final String section) throws ConfigException {
+
+        }
+
+        @SuppressWarnings("WeakerAccess")
+        @JsonPOJOBuilder(withPrefix = "")
+        public static class SomeComponentBuilder {
         }
     }
 }
