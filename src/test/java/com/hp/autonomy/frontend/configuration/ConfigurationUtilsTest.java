@@ -1,5 +1,8 @@
 package com.hp.autonomy.frontend.configuration;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,7 +11,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import static org.hamcrest.Matchers.hasEntry;
@@ -17,8 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigurationUtilsTest<C extends ConfigurationComponent<C>> {
@@ -30,13 +31,11 @@ public class ConfigurationUtilsTest<C extends ConfigurationComponent<C>> {
     private C mergedComponent;
 
     private Supplier<C> customMerge;
-    private BiFunction<C, C, C> customMergeFunction;
 
     @Before
     public void setUp() {
         when(configurationComponent.merge(any())).thenReturn(mergedComponent);
         customMerge = () -> mergedComponent;
-        customMergeFunction = (x, y) -> mergedComponent;
     }
 
     @Test
@@ -121,16 +120,6 @@ public class ConfigurationUtilsTest<C extends ConfigurationComponent<C>> {
     }
 
     @Test
-    public void customMergeFunction() {
-        assertEquals(mergedComponent, ConfigurationUtils.mergeConfiguration(configurationComponent, configurationComponentDefault, customMergeFunction));
-    }
-
-    @Test
-    public void customMergeFunctionNoDefault() {
-        assertEquals(configurationComponent, ConfigurationUtils.mergeConfiguration(configurationComponent, null, customMergeFunction));
-    }
-
-    @Test
     public void basicValidate() throws ConfigException {
         ConfigurationUtils.basicValidate(configurationComponent, "SomeSection");
     }
@@ -144,5 +133,79 @@ public class ConfigurationUtilsTest<C extends ConfigurationComponent<C>> {
     public void basicValidateError() throws ConfigException {
         doThrow(new ConfigException("section", "message")).when(configurationComponent).basicValidate(anyString());
         ConfigurationUtils.basicValidate(configurationComponent, "SomeSection");
+    }
+
+    @Test
+    public void defaultMerge() {
+        final Map<String, String> localMap = new HashMap<>();
+        localMap.put("Key1", "Value1");
+        localMap.put("Key2", "Value2");
+        final Map<String, String> defaultMap = new HashMap<>();
+        defaultMap.put("Key2", "Value22");
+        defaultMap.put("Key3", "Value3");
+        final ConfigurationComponent<?> subComponent = mock(ConfigurationComponent.class);
+        final TestObject local = TestObject.builder()
+                .map(localMap)
+                .simple(true)
+                .subComponent(subComponent)
+                .build();
+        final TestObject defaults = TestObject.builder()
+                .map(defaultMap)
+                .subComponent(mock(ConfigurationComponent.class))
+                .build();
+        final TestObject merged = ConfigurationUtils.defaultMerge(local, defaults);
+        assertThat(merged.map, hasEntry(is("Key1"), is("Value1")));
+        assertThat(merged.map, hasEntry(is("Key2"), is("Value2")));
+        assertThat(merged.map, hasEntry(is("Key3"), is("Value3")));
+        assertThat(merged.simple, is(true));
+        verify(subComponent).merge(any());
+    }
+
+    @Test(expected = ConfigurationUtils.ConfigRuntimeException.class)
+    public void invalidDefaultMerge() {
+        ConfigurationUtils.defaultMerge(new BadObject(null, null, false), new BadObject(null, null, false));
+    }
+
+    @Test
+    public void defaultValidate() throws ConfigException {
+        final ConfigurationComponent<?> subComponent = mock(ConfigurationComponent.class);
+        final TestObject local = TestObject.builder()
+                .simple(true)
+                .subComponent(subComponent)
+                .build();
+        ConfigurationUtils.defaultValidate(local, null);
+        verify(subComponent).basicValidate(anyString());
+    }
+
+    @Test(expected = ConfigException.class)
+    public void invalidDefaultValidate() throws ConfigException {
+        ConfigurationUtils.defaultValidate(new AnotherBadObject(), null);
+    }
+
+    @Getter
+    @Builder
+    private static class TestObject extends SimpleComponent<TestObject> {
+        private final Map<String, String> map;
+        private final ConfigurationComponent<?> subComponent;
+        private final boolean simple;
+    }
+
+    @SuppressWarnings("unused")
+    @Getter
+    @AllArgsConstructor
+    private static class BadObject extends SimpleComponent<BadObject> {
+        private final Map<String, String> map;
+        private final ConfigurationComponent<?> subComponent;
+        private final boolean simple;
+    }
+
+    @SuppressWarnings("unused")
+    private static class AnotherBadObject extends SimpleComponent<AnotherBadObject> {
+        private ConfigurationComponent<?> badComponent;
+
+        @SuppressWarnings("ProhibitedExceptionThrown")
+        public ConfigurationComponent<?> getBadComponent() {
+            throw new RuntimeException();
+        }
     }
 }
