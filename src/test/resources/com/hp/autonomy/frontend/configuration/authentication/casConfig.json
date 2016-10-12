@@ -1,0 +1,5 @@
+{
+  "casServerLoginUrl": "/login",
+  "casServerUrlPrefix": "prefix",
+  "serverName": "SLAVE"
+}

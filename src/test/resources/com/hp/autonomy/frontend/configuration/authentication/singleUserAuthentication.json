@@ -9,7 +9,6 @@
             "username": "admin",
             "password": "password"
         },
-        "className": "com.autonomy.frontend.configuration.SingleUserAuthentication",
         "name": "SingleUserAuthentication"
     }
 }

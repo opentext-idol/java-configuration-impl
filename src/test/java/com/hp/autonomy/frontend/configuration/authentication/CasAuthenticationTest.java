@@ -5,74 +5,75 @@
 
 package com.hp.autonomy.frontend.configuration.authentication;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hp.autonomy.frontend.configuration.ConfigurationComponentTest;
 import com.hp.autonomy.frontend.configuration.LoginTypes;
-import com.hp.autonomy.frontend.configuration.TestConfig;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.commons.io.IOUtils;
+import org.springframework.boot.test.json.JsonContent;
+import org.springframework.boot.test.json.ObjectContent;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.fail;
 
-public class CasAuthenticationTest {
-
-    private ObjectMapper objectMapper;
-
-    @Before
-    public void setUp() {
-        objectMapper = new ObjectMapper();
+public class CasAuthenticationTest extends ConfigurationComponentTest<TestConfig> {
+    @Override
+    protected Class<TestConfig> getType() {
+        return TestConfig.class;
     }
 
-    @Test
-    public void jsonSerialization() {
-        final DefaultLogin defaultLogin = DefaultLogin.generateDefaultLogin();
+    @Override
+    protected TestConfig constructComponent() {
+        final UsernameAndPassword defaultLogin = DefaultLogin.generateDefaultLogin();
 
-        final CasConfig casConfig = new CasConfig.Builder()
-                .setCasServerLoginUrl("/login/authenticatedLogin")
-                .setCasServerUrlPrefix("prefix")
-                .setServerName("test-server")
+        final CasConfig casConfig = CasConfig.builder()
+                .casServerLoginUrl("/login/authenticatedLogin")
+                .casServerUrlPrefix("prefix")
+                .serverName("test-server")
                 .build();
 
-        final CasAuthentication casAuthentication = new CasAuthentication.Builder()
-                .setCas(casConfig)
-                .setDefaultLogin(defaultLogin)
-                .setMethod(LoginTypes.CAS)
-                .build();
-
-        final JsonNode jsonNode = objectMapper.valueToTree(casAuthentication);
-
-        // hard coding this would prevent package movement
-        assertThat(jsonNode.get("name").asText(), is("CasAuthentication"));
-        assertThat(jsonNode.get("method").asText(), is(LoginTypes.CAS));
-        assertThat(jsonNode.get("cas").get("casServerLoginUrl").asText(), is("/login/authenticatedLogin"));
-        assertThat(jsonNode.get("cas").get("casServerUrlPrefix").asText(), is("prefix"));
-        assertThat(jsonNode.get("cas").get("serverName").asText(), is("test-server"));
-        assertThat(jsonNode.get("defaultLogin").get("username").asText(), is("admin"));
-        assertThat(jsonNode.get("defaultLogin").get("password").asText(), notNullValue());
+        return new TestConfig(CasAuthentication.builder()
+                .cas(casConfig)
+                .defaultLogin(defaultLogin)
+                .method(LoginTypes.CAS)
+                .build());
     }
 
-    @Test
-    public void jsonDeserialization() throws IOException {
-        final InputStream inputStream = getClass().getResourceAsStream("/com/hp/autonomy/frontend/configuration/casAuthentication.json");
+    @Override
+    protected String sampleJson() throws IOException {
+        return IOUtils.toString(getClass().getResourceAsStream("/com/hp/autonomy/frontend/configuration/authentication/casAuthentication.json"));
+    }
 
-        final TestConfig testConfig = objectMapper.readValue(inputStream, TestConfig.class);
-        final Authentication<?> authentication = testConfig.getAuthentication();
+    @Override
+    protected void validateJson(final JsonContent<TestConfig> json) {
+        json.assertThat().extractingJsonPathStringValue("@.authentication.name").isEqualTo("CasAuthentication");
+        json.assertThat().extractingJsonPathStringValue("@.authentication.method").isEqualTo(LoginTypes.CAS);
+        json.assertThat().extractingJsonPathStringValue("@.authentication.cas.casServerLoginUrl").isEqualTo("/login/authenticatedLogin");
+        json.assertThat().extractingJsonPathStringValue("@.authentication.cas.casServerUrlPrefix").isEqualTo("prefix");
+        json.assertThat().extractingJsonPathStringValue("@.authentication.cas.serverName").isEqualTo("test-server");
+        json.assertThat().extractingJsonPathStringValue("@.authentication.defaultLogin.username").isEqualTo("admin");
+        json.assertThat().extractingJsonPathStringValue("@.authentication.defaultLogin.password").isNotNull();
+    }
 
-        if (authentication instanceof CasAuthentication) {
-            final CasAuthentication casAuthentication = (CasAuthentication) authentication;
-            final CasConfig cas = casAuthentication.getCas();
+    @Override
+    protected void validateParsedComponent(final ObjectContent<TestConfig> component) {
+        @SuppressWarnings("CastToConcreteClass")
+        final CasAuthentication casAuthentication = (CasAuthentication) component.getObject().getAuthentication();
+        final CasConfig cas = casAuthentication.getCas();
 
-            assertThat(cas.getCasServerLoginUrl(), is("loginUrl"));
-            assertThat(cas.getCasServerUrlPrefix(), is("prefix"));
-            assertThat(cas.getServerName(), is("serverName"));
-        } else {
-            fail("Deserialized class not of correct type");
-        }
+        assertThat(cas.getCasServerLoginUrl(), is("loginUrl"));
+        assertThat(cas.getCasServerUrlPrefix(), is("prefix"));
+        assertThat(cas.getServerName(), is("serverName"));
+    }
+
+    @Override
+    protected void validateMergedComponent(final ObjectContent<TestConfig> mergedComponent) {
+        @SuppressWarnings("CastToConcreteClass")
+        final CasAuthentication casAuthentication = (CasAuthentication) mergedComponent.getObject().getAuthentication();
+        final CasConfig cas = casAuthentication.getCas();
+
+        assertThat(cas.getCasServerLoginUrl(), is("/login/authenticatedLogin"));
+        assertThat(cas.getCasServerUrlPrefix(), is("prefix"));
+        assertThat(cas.getServerName(), is("test-server"));
     }
 }

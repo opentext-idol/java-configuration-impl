@@ -12,31 +12,24 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.ConfigException;
 import com.hp.autonomy.frontend.configuration.LoginTypes;
+import com.hp.autonomy.frontend.configuration.SimpleComponent;
 import com.hp.autonomy.frontend.configuration.validation.ValidatingConfigurationComponent;
 import com.hp.autonomy.frontend.configuration.validation.ValidationResult;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import lombok.Builder;
+import lombok.Getter;
 
 /**
  * {@link Authentication} for using CAS
  */
 @SuppressWarnings({"WeakerAccess", "InstanceVariableOfConcreteClass"})
-@Data
-@JsonDeserialize(builder = CasAuthentication.Builder.class)
+@Getter
+@Builder(toBuilder = true)
+@JsonDeserialize(builder = CasAuthentication.CasAuthenticationBuilder.class)
 @JsonTypeName("CasAuthentication")
-public class CasAuthentication implements Authentication<CasAuthentication>, ValidatingConfigurationComponent<CasAuthentication> {
-
-    private final DefaultLogin defaultLogin;
+public class CasAuthentication extends SimpleComponent<CasAuthentication> implements Authentication<CasAuthentication>, ValidatingConfigurationComponent<CasAuthentication> {
+    private final UsernameAndPassword defaultLogin;
     private final String method;
     private final CasConfig cas;
-
-    private CasAuthentication(final Builder builder) {
-        cas = builder.cas;
-        defaultLogin = builder.defaultLogin;
-        method = builder.method;
-    }
 
     @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass"})
     @Override
@@ -45,20 +38,9 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
     }
 
     @Override
-    public CasAuthentication merge(final CasAuthentication other) {
-        final Builder builder = new Builder(this);
-
-        builder.setDefaultLogin(defaultLogin == null ? other.defaultLogin : defaultLogin.merge(other.defaultLogin));
-        builder.setCas(cas == null ? other.cas : cas.merge(other.cas));
-        builder.setMethod(method == null ? other.method : method);
-
-        return builder.build();
-    }
-
-    @Override
     public void basicValidate(final String section) throws ConfigException {
         if (LoginTypes.CAS.equalsIgnoreCase(method)) {
-            cas.basicValidate();
+            cas.basicValidate(section);
         }
     }
 
@@ -69,13 +51,13 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
 
     @Override
     public UsernameAndPassword getDefaultLogin() {
-        return defaultLogin.getDefaultLogin();
+        return defaultLogin;
     }
 
     @Override
     public ValidationResult<?> validate() {
         try {
-            cas.basicValidate();
+            cas.basicValidate(null);
 
             return new ValidationResult<Void>(true);
         } catch (final ConfigException e) {
@@ -85,20 +67,16 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
 
     @Override
     public CasAuthentication generateDefaultLogin() {
-        final Builder builder = new Builder(this);
-
-        builder.defaultLogin = DefaultLogin.generateDefaultLogin();
-
-        return builder.build();
+        return toBuilder()
+                .defaultLogin(DefaultLogin.generateDefaultLogin())
+                .build();
     }
 
     @Override
     public CasAuthentication withoutDefaultLogin() {
-        final Builder builder = new Builder(this);
-
-        builder.defaultLogin = new DefaultLogin.Builder().build();
-
-        return builder.build();
+        return toBuilder()
+                .defaultLogin(UsernameAndPassword.builder().build())
+                .build();
     }
 
     @Override
@@ -117,28 +95,9 @@ public class CasAuthentication implements Authentication<CasAuthentication>, Val
         return true;
     }
 
-    @NoArgsConstructor
-    @JsonPOJOBuilder(withPrefix = "set")
-    @Accessors(chain = true)
-    @Setter
+    @JsonPOJOBuilder(withPrefix = "")
     @JsonIgnoreProperties({"singleUser", "community", "className"}) // backwards compatibility
-    public static class Builder {
-
-        private CasConfig cas;
-        private DefaultLogin defaultLogin = new DefaultLogin.Builder().build();
-        private String method;
-
-        public Builder(final CasAuthentication casAuthentication) {
-            cas = casAuthentication.cas;
-            if (casAuthentication.defaultLogin != null) {
-                defaultLogin = casAuthentication.defaultLogin;
-            }
-            method = casAuthentication.method;
-        }
-
-        public CasAuthentication build() {
-            return new CasAuthentication(this);
-        }
+    public static class CasAuthenticationBuilder {
     }
 
 }

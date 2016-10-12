@@ -8,23 +8,29 @@ package com.hp.autonomy.frontend.configuration.redis;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.ConfigException;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+import com.hp.autonomy.frontend.configuration.SimpleComponent;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Singular;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Configuration for a Redis server. This allows both a single Redis or a Redis Sentinel configuration
  */
-@Data
-@JsonDeserialize(builder = RedisConfig.Builder.class)
-public class RedisConfig {
+@SuppressWarnings({"WeakerAccess", "InstanceVariableOfConcreteClass", "MismatchedQueryAndUpdateOfCollection"})
+@Getter
+@Builder
+@JsonDeserialize(builder = RedisConfig.RedisConfigBuilder.class)
+public class RedisConfig extends SimpleComponent<RedisConfig> {
+    private static final String CONFIG_SECTION = "redis";
+
     private final String masterName;
     private final String password;
     private final HostAndPort address;
-    private final Set<HostAndPort> sentinels;
+    @Singular
+    private final Collection<HostAndPort> sentinels;
     private final Integer database;
 
     /**
@@ -34,72 +40,35 @@ public class RedisConfig {
      */
     private final Boolean autoConfigure;
 
-    private RedisConfig(final Builder builder) {
-        masterName = builder.masterName;
-        password = builder.password;
-        address = builder.address;
-        sentinels = builder.sentinels;
-        database = builder.database;
-        autoConfigure = builder.autoConfigure;
-    }
-
     /**
      * Validates the configuration
      *
      * @throws ConfigException If either:
-     *                         <li>address is non null and invalid, and sentinels is null or empty </li>
+     *                         <li>address is non null and invalid</li>
+     *                         <li>address is null and sentinels is null or empty </li>
      *                         <li>sentinels is non null and non empty and masterName is null or blank</li>
+     *                         <li>any sentinels are invalid</li>
      */
-    public void basicValidate() throws ConfigException {
-        if ((address != null && !address.validate()) && (sentinels == null || sentinels.isEmpty())) {
-            throw new ConfigException("redis", "Redis configuration requires either an address or at least one sentinel to connect to");
+    @Override
+    public void basicValidate(final String section) throws ConfigException {
+        super.basicValidate(CONFIG_SECTION);
+
+        if (address == null && (sentinels == null || sentinels.isEmpty())) {
+            throw new ConfigException(CONFIG_SECTION, "Redis configuration requires either an address or at least one sentinel to connect to");
         }
 
-        if (sentinels != null && !sentinels.isEmpty() && StringUtils.isBlank(masterName)) {
-            throw new ConfigException("redis", "Redis configuration requires a masterName when connecting to sentinel");
+        if (sentinels != null && !sentinels.isEmpty()) {
+            if (StringUtils.isBlank(masterName)) {
+                throw new ConfigException(CONFIG_SECTION, "Redis configuration requires a masterName when connecting to sentinel");
+            }
+
+            for (final HostAndPort sentinel : sentinels) {
+                sentinel.basicValidate(CONFIG_SECTION);
+            }
         }
     }
 
-    /**
-     * Creates a new RedisConfig using values from this with missing values supplied by other
-     *
-     * @param other The other Redis configuration
-     * @return The new merged Redis config
-     */
-    public RedisConfig merge(final RedisConfig other) {
-        final Builder builder = new Builder(this);
-        if (masterName == null) builder.masterName = other.masterName;
-        if (password == null) builder.password = other.password;
-        if (sentinels == null) builder.sentinels = other.sentinels;
-        if (database == null) builder.database = other.database;
-        if (autoConfigure == null) builder.autoConfigure = other.autoConfigure;
-        builder.address = address == null ? other.address : address.merge(other.address);
-        return builder.build();
-    }
-
-    @Data
-    @NoArgsConstructor
-    @Accessors(chain = true)
-    @JsonPOJOBuilder(withPrefix = "set")
-    public static class Builder {
-        private String masterName;
-        private String password;
-        private HostAndPort address;
-        private Set<HostAndPort> sentinels;
-        private Integer database;
-        private Boolean autoConfigure;
-
-        public Builder(final RedisConfig config) {
-            masterName = config.masterName;
-            password = config.password;
-            address = config.address;
-            sentinels = config.sentinels;
-            database = config.database;
-            autoConfigure = config.autoConfigure;
-        }
-
-        public RedisConfig build() {
-            return new RedisConfig(this);
-        }
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class RedisConfigBuilder {
     }
 }

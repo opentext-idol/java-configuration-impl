@@ -5,53 +5,38 @@
 
 package com.hp.autonomy.frontend.configuration.redis;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import com.hp.autonomy.frontend.configuration.ConfigException;
+import com.hp.autonomy.frontend.configuration.SimpleComponent;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 
 /**
  * Combines a hostname with a port
  */
-@Data
-public class HostAndPort {
+@SuppressWarnings({"WeakerAccess", "DefaultAnnotationParam"})
+@Getter
+@Builder
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+public class HostAndPort extends SimpleComponent<HostAndPort> {
+    private static final int MAX_PORT = 65535;
+
     private final String host;
     private final Integer port;
 
     /**
-     * Creates a new HostAndPort
-     *
-     * @param host The hostname
-     * @param port The port
-     */
-    public HostAndPort(@JsonProperty("host") final String host, @JsonProperty("port") final Integer port) {
-        this.host = host;
-        this.port = port;
-    }
-
-    /**
-     * Creates a new HostAndPort using values from this with missing values supplied by other
-     *
-     * @param other The other HostAndPort
-     * @return The new merged HostAndPort
-     */
-    public HostAndPort merge(final HostAndPort other) {
-        if (other == null) {
-            return this;
-        }
-
-        return new HostAndPort(
-                host == null ? other.host : host,
-                port == null ? other.port : port
-        );
-    }
-
-    /**
      * Returns the validation state of the config
      *
-     * @return True if the hostname is not empty and the port is between 0 and 65536; false otherwise
+     * @throws ConfigException if the hostname is empty or the port is not between 0 and 65536
      */
-    public boolean validate() {
-        return !StringUtils.isEmpty(host) && port != null && port > 0 && port <= 65535;
+    @Override
+    public void basicValidate(final String section) throws ConfigException {
+        if (StringUtils.isEmpty(host) || port == null || port <= 0 || port > MAX_PORT) {
+            throw new ConfigException(section, "Invalid host and port");
+        }
     }
 
     @Override

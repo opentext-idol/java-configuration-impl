@@ -13,30 +13,23 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.ConfigException;
 import com.hp.autonomy.frontend.configuration.ConfigService;
 import com.hp.autonomy.frontend.configuration.LoginTypes;
+import com.hp.autonomy.frontend.configuration.SimpleComponent;
 import com.hp.autonomy.frontend.configuration.validation.ValidationResult;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import lombok.Builder;
+import lombok.Getter;
 
 /**
  * {@link Authentication} object for a single username and password
  */
 @SuppressWarnings({"InstanceofConcreteClass", "WeakerAccess", "InstanceVariableOfConcreteClass"})
-@Data
-@JsonDeserialize(builder = SingleUserAuthentication.Builder.class)
+@Getter
+@Builder(toBuilder = true)
+@JsonDeserialize(builder = SingleUserAuthentication.SingleUserAuthenticationBuilder.class)
 @JsonTypeName("SingleUserAuthentication")
-public class SingleUserAuthentication implements Authentication<SingleUserAuthentication> {
-
-    private final DefaultLogin defaultLogin;
+public class SingleUserAuthentication extends SimpleComponent<SingleUserAuthentication> implements Authentication<SingleUserAuthentication> {
+    private final UsernameAndPassword defaultLogin;
     private final BCryptUsernameAndPassword singleUser;
     private final String method;
-
-    private SingleUserAuthentication(final Builder builder) {
-        defaultLogin = builder.defaultLogin;
-        singleUser = builder.singleUser;
-        method = builder.method;
-    }
 
     @Override
     public String getMethod() {
@@ -44,61 +37,37 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
     }
 
     @Override
-    public UsernameAndPassword getDefaultLogin() {
-        return defaultLogin.getDefaultLogin();
-    }
-
-    @Override
     public SingleUserAuthentication generateDefaultLogin() {
-        final Builder builder = new Builder(this);
-
-        builder.defaultLogin = DefaultLogin.generateDefaultLogin();
-
-        return builder.build();
+        return toBuilder()
+                .defaultLogin(DefaultLogin.generateDefaultLogin())
+                .build();
     }
 
     @Override
     public SingleUserAuthentication withoutDefaultLogin() {
-        final Builder builder = new Builder(this);
-
-        builder.defaultLogin = new DefaultLogin.Builder().build();
-
-        return builder.build();
+        return toBuilder()
+                .defaultLogin(UsernameAndPassword.builder().build())
+                .build();
     }
 
     @Override
     public SingleUserAuthentication withHashedPasswords() {
-        final Builder builder = new Builder(this);
-
-        builder.singleUser = singleUser.withHashedPassword();
-
-        return builder.build();
+        return toBuilder()
+                .singleUser(singleUser.withHashedPassword())
+                .build();
     }
 
     @Override
     public SingleUserAuthentication withoutPasswords() {
-        final Builder builder = new Builder(this);
-
-        builder.singleUser = singleUser.withoutPasswords();
-
-        return builder.build();
+        return toBuilder()
+                .singleUser(singleUser.withoutPasswords())
+                .build();
     }
 
     @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass"})
     @Override
     public SingleUserAuthentication merge(final Authentication<?> other) {
         return other instanceof SingleUserAuthentication ? merge((SingleUserAuthentication) other) : this;
-    }
-
-    @Override
-    public SingleUserAuthentication merge(final SingleUserAuthentication other) {
-        final Builder builder = new Builder(this);
-
-        builder.setDefaultLogin(defaultLogin == null ? other.defaultLogin : defaultLogin.merge(other.defaultLogin));
-        builder.setSingleUser(singleUser == null ? other.singleUser : singleUser.merge(other.singleUser));
-        builder.setMethod(method == null ? other.method : method);
-
-        return builder.build();
     }
 
     @Override
@@ -120,7 +89,7 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
 
         if (authentication instanceof SingleUserAuthentication) {
             final SingleUserAuthentication current = (SingleUserAuthentication) authentication;
-            return singleUser.validate(current.singleUser, current.getDefaultLogin());
+            return singleUser.validate(current.singleUser, current.defaultLogin);
         } else {
             // TODO: should this be true? e.g. if switching authentication types
             return new ValidationResult<>(false, "Type mismatch: SingleUserAuthentication not found");
@@ -128,28 +97,8 @@ public class SingleUserAuthentication implements Authentication<SingleUserAuthen
     }
 
     @SuppressWarnings("InstanceVariableOfConcreteClass")
-    @NoArgsConstructor
-    @JsonPOJOBuilder(withPrefix = "set")
-    @Setter
-    @Accessors(chain = true)
+    @JsonPOJOBuilder(withPrefix = "")
     @JsonIgnoreProperties({"cas", "community", "className"}) // backwards compatibility
-    public static class Builder {
-
-        private DefaultLogin defaultLogin = new DefaultLogin.Builder().build();
-        private BCryptUsernameAndPassword singleUser;
-        private String method;
-
-        public Builder(final SingleUserAuthentication singleUserAuthentication) {
-            if (singleUserAuthentication.defaultLogin != null) {
-                defaultLogin = singleUserAuthentication.defaultLogin;
-            }
-
-            singleUser = singleUserAuthentication.singleUser;
-            method = singleUserAuthentication.method;
-        }
-
-        public SingleUserAuthentication build() {
-            return new SingleUserAuthentication(this);
-        }
+    public static class SingleUserAuthenticationBuilder {
     }
 }

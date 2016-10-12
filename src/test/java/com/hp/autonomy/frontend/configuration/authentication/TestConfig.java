@@ -3,13 +3,17 @@
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
  */
 
-package com.hp.autonomy.frontend.configuration;
+package com.hp.autonomy.frontend.configuration.authentication;
 
-import com.hp.autonomy.frontend.configuration.authentication.Authentication;
-import com.hp.autonomy.frontend.configuration.authentication.AuthenticationConfig;
+import com.hp.autonomy.frontend.configuration.SimpleComponent;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
-public class TestConfig implements AuthenticationConfig<TestConfig> {
-    private Authentication<?> authentication;
+@SuppressWarnings("WeakerAccess")
+@Builder
+@AllArgsConstructor
+public class TestConfig extends SimpleComponent<TestConfig> implements AuthenticationConfig<TestConfig> {
+    private final Authentication<?> authentication;
 
     @Override
     public TestConfig generateDefaultLogin() {

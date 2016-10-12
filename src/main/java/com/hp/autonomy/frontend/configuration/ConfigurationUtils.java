@@ -23,10 +23,10 @@ public class ConfigurationUtils {
     /**
      * Merges (nullable) local configuration with (nullable) default configuration for a given custom merge function
      *
-     * @param local local configuration object
+     * @param local    local configuration object
      * @param defaults default configuration object
-     * @param merge the merge function
-     * @param <F> the configuration object type
+     * @param merge    the merge function
+     * @param <F>      the configuration object type
      * @return the merged configuration
      */
     public static <F extends ConfigurationComponent<F>> F mergeConfiguration(final F local, final F defaults, final Supplier<F> merge) {
@@ -36,9 +36,9 @@ public class ConfigurationUtils {
     /**
      * Merges a (nullable) simple field on the local config object with a default (nullable) value in the default config object
      *
-     * @param localValue local field value
+     * @param localValue   local field value
      * @param defaultValue default field value
-     * @param <F> the configuration object type
+     * @param <F>          the configuration object type
      * @return the merged field value
      */
     public static <F> F mergeField(final F localValue, final F defaultValue) {
@@ -48,9 +48,9 @@ public class ConfigurationUtils {
     /**
      * Merges a (nullable) object field on the local config object with a default (nullable) value in the default config object
      *
-     * @param localValue local field value
+     * @param localValue   local field value
      * @param defaultValue default field value
-     * @param <F> the configuration object type
+     * @param <F>          the configuration object type
      * @return the merged field value
      */
     public static <F extends ConfigurationComponent<F>> F mergeComponent(final F localValue, final F defaultValue) {
@@ -61,10 +61,10 @@ public class ConfigurationUtils {
      * Merges a (nullable) map on the local config object with a (nullable) map in the default config object
      * by adding all the fields from the default map to a new map, and then adding the local fields on top
      *
-     * @param localValue local field value
+     * @param localValue   local field value
      * @param defaultValue default field value
-     * @param <K> the map key type
-     * @param <V> the map value type
+     * @param <K>          the map key type
+     * @param <V>          the map value type
      * @return the merged field value
      */
     public static <K, V> Map<K, V> mergeMap(final Map<K, V> localValue, final Map<K, V> defaultValue) {
@@ -79,32 +79,25 @@ public class ConfigurationUtils {
      * Calls {@link ConfigurationComponent#basicValidate(String)} on the supplied component if not null
      *
      * @param component the nullable component
-     * @param section the configuration section
-     * @param <F> the component type
+     * @param section   the configuration section
+     * @param <F>       the component type
      * @throws ConfigException validation failure
      */
     public static <F extends ConfigurationComponent<F>> void basicValidate(final F component, final String section) throws ConfigException {
-        // TODO: see about making ConfigException a runtime exception and remove this hack
-        try {
-            Optional.ofNullable(component).ifPresent(v -> {
-                try {
-                    v.basicValidate(section);
-                } catch (final ConfigException e) {
-                    throw new ConfigRuntimeException(e.getMessage(), e);
-                }
-            });
-        } catch (final ConfigRuntimeException e) {
-            throw new ConfigException(e.getMessage(), e);
+        final Optional<F> maybeComponent = Optional.ofNullable(component);
+        if (maybeComponent.isPresent()) {
+            maybeComponent.get().basicValidate(section);
         }
     }
 
     /**
      * Performs skeleton validation, searching for any non-null {@link ConfigurationComponent} fields and calling {@link ConfigurationComponent#basicValidate(String)}
      *
-     * @param local local configuration object
+     * @param local    local configuration object
      * @param defaults default configuration object
-     * @param <F> the configuration object type
+     * @param <F>      the configuration object type
      * @return the merged configuration
+     * @see SimpleComponent for basic usage
      */
     public static <F extends ConfigurationComponent<F>> F defaultMerge(final F local, final F defaults) {
         return mergeConfiguration(local, defaults, () -> defaultMergeInternal(local, defaults));
@@ -114,9 +107,10 @@ public class ConfigurationUtils {
      * Calls {@link ConfigurationComponent#basicValidate(String)} on the supplied component if not null
      *
      * @param component the nullable component
-     * @param section the configuration section
-     * @param <F> the component type
+     * @param section   the configuration section
+     * @param <F>       the component type
      * @throws ConfigException validation failure
+     * @see SimpleComponent for basic usage
      */
     public static <F extends ConfigurationComponent<F>> void defaultValidate(final F component, final String section) throws ConfigException {
         try {
@@ -142,15 +136,15 @@ public class ConfigurationUtils {
             final BeanInfo beanInfo = Introspector.getBeanInfo(type);
             for (final PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
                 final String propertyName = propertyDescriptor.getName();
-                if (!"class".equals(propertyName)) {
-                    final Class<?> propertyType = propertyDescriptor.getPropertyType();
-                    final Method getter = propertyDescriptor.getReadMethod();
-                    final Object localValue = getter.invoke(local);
-                    final Object defaultValue = getter.invoke(defaults);
-                    @SuppressWarnings({"unchecked", "rawtypes"})
-                    final Object mergedValue = mergeProperty((Class) propertyType, localValue, defaultValue);
-                    final Method setter = builderType.getMethod(propertyName, propertyType);
-                    setter.invoke(builder, mergedValue);
+                final Class<?> propertyType = propertyDescriptor.getPropertyType();
+                final Method getter = propertyDescriptor.getReadMethod();
+                final Object localValue = getter.invoke(local);
+                final Object defaultValue = getter.invoke(defaults);
+                @SuppressWarnings({"unchecked", "rawtypes"})
+                final Object mergedValue = mergeProperty((Class) propertyType, localValue, defaultValue);
+                final Optional<Method> maybeSetter = getMethod(builderType, propertyName, propertyType);
+                if (maybeSetter.isPresent()) {
+                    maybeSetter.get().invoke(builder, mergedValue);
                 }
             }
 
@@ -179,6 +173,17 @@ public class ConfigurationUtils {
         }
 
         return mergeFunction;
+    }
+
+    private static Optional<Method> getMethod(final Class<?> builderType, final String methodName, final Class<?>... parameterTypes) {
+        Optional<Method> maybeMethod;
+        try {
+            maybeMethod = Optional.of(builderType.getMethod(methodName, parameterTypes));
+        } catch (final NoSuchMethodException ignored) {
+            maybeMethod = Optional.empty();
+        }
+
+        return maybeMethod;
     }
 
     static class ConfigRuntimeException extends RuntimeException {

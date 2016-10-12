@@ -8,23 +8,24 @@ package com.hp.autonomy.frontend.configuration.authentication;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.ConfigException;
+import com.hp.autonomy.frontend.configuration.SimpleComponent;
 import com.hp.autonomy.frontend.configuration.validation.OptionalConfigurationComponent;
 import com.hp.autonomy.frontend.configuration.validation.ValidationResult;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.apache.commons.lang.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**
  * Configuration object for a username and password where the password is hashed using BCrypt
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "DefaultAnnotationParam"})
 @Getter
-@EqualsAndHashCode
-@JsonDeserialize(builder = BCryptUsernameAndPassword.Builder.class)
-public class BCryptUsernameAndPassword implements OptionalConfigurationComponent<BCryptUsernameAndPassword> {
+@Builder(toBuilder = true)
+@EqualsAndHashCode(callSuper = false)
+@JsonDeserialize(builder = BCryptUsernameAndPassword.BCryptUsernameAndPasswordBuilder.class)
+public class BCryptUsernameAndPassword extends SimpleComponent<BCryptUsernameAndPassword> implements OptionalConfigurationComponent<BCryptUsernameAndPassword> {
 
     private static final int BCRYPT_LOG_HASHING_ROUNDS = 10;
 
@@ -34,47 +35,28 @@ public class BCryptUsernameAndPassword implements OptionalConfigurationComponent
     private final String hashedPassword;
     private final boolean passwordRedacted;
 
-    private BCryptUsernameAndPassword(final Builder builder) {
-        username = builder.username;
-        currentPassword = builder.currentPassword;
-        plaintextPassword = builder.plaintextPassword;
-        hashedPassword = builder.hashedPassword;
-        passwordRedacted = builder.passwordRedacted;
-    }
-
-    @Override
-    public BCryptUsernameAndPassword merge(final BCryptUsernameAndPassword usernameAndPassword) {
-        if (usernameAndPassword != null) {
-            final Builder builder = new Builder();
-
-            builder.setUsername(username == null ? usernameAndPassword.username : username);
-            builder.setHashedPassword(passwordRedacted || hashedPassword == null ? usernameAndPassword.hashedPassword : hashedPassword);
-            builder.setCurrentPassword(passwordRedacted || currentPassword == null ? usernameAndPassword.currentPassword : currentPassword);
-            builder.setPlaintextPassword(passwordRedacted || plaintextPassword == null ? usernameAndPassword.plaintextPassword : plaintextPassword);
-            builder.setPasswordRedacted(false);
-
-            return builder.build();
-        } else {
-            return this;
-        }
-    }
-
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public BCryptUsernameAndPassword merge(final BCryptUsernameAndPassword other) {
+        return super.merge(other).toBuilder()
+                .passwordRedacted(false)
+                .build();
     }
 
     /**
      * @return A copy of this object with a hashed password and no plaintext password
      */
     public BCryptUsernameAndPassword withHashedPassword() {
-        final Builder builder = new Builder(this);
-
-        builder.setPlaintextPassword(null);
-        builder.setCurrentPassword(null);
+        final BCryptUsernameAndPasswordBuilder builder = toBuilder()
+                .plaintextPassword(null)
+                .currentPassword(null);
 
         if (hashedPassword != null && StringUtils.isNotBlank(plaintextPassword)) {
-            builder.setHashedPassword(BCrypt.hashpw(plaintextPassword, BCrypt.gensalt(BCRYPT_LOG_HASHING_ROUNDS)));
+            builder.hashedPassword(BCrypt.hashpw(plaintextPassword, BCrypt.gensalt(BCRYPT_LOG_HASHING_ROUNDS)));
         }
 
         return builder.build();
@@ -105,40 +87,18 @@ public class BCryptUsernameAndPassword implements OptionalConfigurationComponent
     }
 
     public BCryptUsernameAndPassword withoutPasswords() {
-        final Builder builder = new Builder(this);
-
-        builder.plaintextPassword = null;
+        final BCryptUsernameAndPasswordBuilder builder = toBuilder()
+                .plaintextPassword(null);
 
         if (StringUtils.isNotEmpty(builder.hashedPassword)) {
-            builder.hashedPassword = null;
-            builder.passwordRedacted = true;
+            builder.hashedPassword(null);
+            builder.passwordRedacted(true);
         }
 
         return builder.build();
     }
 
-    @JsonPOJOBuilder(withPrefix = "set")
-    @Setter
-    @Accessors(chain = true)
-    public static class Builder {
-        private String username;
-        private String currentPassword;
-        private String plaintextPassword;
-        private String hashedPassword;
-        private boolean passwordRedacted;
-
-        public Builder() {
-        }
-
-        public Builder(final BCryptUsernameAndPassword usernameAndPassword) {
-            username = usernameAndPassword.username;
-            currentPassword = usernameAndPassword.currentPassword;
-            plaintextPassword = usernameAndPassword.plaintextPassword;
-            hashedPassword = usernameAndPassword.hashedPassword;
-        }
-
-        public BCryptUsernameAndPassword build() {
-            return new BCryptUsernameAndPassword(this);
-        }
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class BCryptUsernameAndPasswordBuilder {
     }
 }
