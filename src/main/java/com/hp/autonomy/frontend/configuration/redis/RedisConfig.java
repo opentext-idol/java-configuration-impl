@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.ConfigException;
 import com.hp.autonomy.frontend.configuration.SimpleComponent;
+import com.hp.autonomy.frontend.configuration.server.HostAndPort;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;

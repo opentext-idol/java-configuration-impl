@@ -1,4 +1,4 @@
-package com.hp.autonomy.frontend.configuration.redis;
+package com.hp.autonomy.frontend.configuration.server;
 
 import com.hp.autonomy.frontend.configuration.ConfigException;
 import com.hp.autonomy.frontend.configuration.ConfigurationComponentTest;
@@ -39,7 +39,7 @@ public class HostAndPortTest extends ConfigurationComponentTest<HostAndPort> {
 
     @Override
     protected String sampleJson() throws IOException {
-        return IOUtils.toString(getClass().getResourceAsStream("/com/hp/autonomy/frontend/configuration/redis/hostAndPort.json"));
+        return IOUtils.toString(getClass().getResourceAsStream("/com/hp/autonomy/frontend/configuration/server/hostAndPort.json"));
     }
 
     @Override

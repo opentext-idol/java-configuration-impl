@@ -2,6 +2,7 @@ package com.hp.autonomy.frontend.configuration.redis;
 
 import com.hp.autonomy.frontend.configuration.ConfigException;
 import com.hp.autonomy.frontend.configuration.ConfigurationComponentTest;
+import com.hp.autonomy.frontend.configuration.server.HostAndPort;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.boot.test.json.JsonContent;
