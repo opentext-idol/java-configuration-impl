@@ -36,7 +36,7 @@ public class BCryptUsernameAndPassword extends SimpleComponent<BCryptUsernameAnd
     private final boolean passwordRedacted;
 
     @Override
-    public boolean isEnabled() {
+    public Boolean getEnabled() {
         return true;
     }
 

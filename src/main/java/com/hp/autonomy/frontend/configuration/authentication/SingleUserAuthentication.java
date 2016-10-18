@@ -79,7 +79,7 @@ public class SingleUserAuthentication extends SimpleComponent<SingleUserAuthenti
 
     @Override
     @JsonIgnore
-    public boolean isEnabled() {
+    public Boolean getEnabled() {
         return true;
     }
 

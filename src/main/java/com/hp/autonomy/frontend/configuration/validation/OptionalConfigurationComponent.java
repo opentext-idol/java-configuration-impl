@@ -12,6 +12,6 @@ import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
  */
 public interface OptionalConfigurationComponent<C extends OptionalConfigurationComponent<C>> extends ConfigurationComponent<C> {
 
-    boolean isEnabled();
+    Boolean getEnabled();
 
 }

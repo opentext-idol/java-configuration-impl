@@ -106,7 +106,7 @@ public class AbstractConfigTest {
         }
 
         @Override
-        public boolean isEnabled() {
+        public Boolean getEnabled() {
             return false;
         }
     }
@@ -123,7 +123,7 @@ public class AbstractConfigTest {
         }
 
         @Override
-        public boolean isEnabled() {
+        public Boolean getEnabled() {
             return true;
         }
     }

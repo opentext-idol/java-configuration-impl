@@ -22,8 +22,8 @@ public class BCryptUsernameAndPasswordTest extends ConfigurationComponentTest<BC
     }
 
     @Test
-    public void isEnabled() {
-        assertTrue(constructComponent().isEnabled());
+    public void getEnabled() {
+        assertTrue(constructComponent().getEnabled());
     }
 
     @Ignore //TODO: not obvious how this is meant to work

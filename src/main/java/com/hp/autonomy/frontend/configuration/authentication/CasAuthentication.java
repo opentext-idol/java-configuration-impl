@@ -91,7 +91,7 @@ public class CasAuthentication extends SimpleComponent<CasAuthentication> implem
 
     @Override
     @JsonIgnore
-    public boolean isEnabled() {
+    public Boolean getEnabled() {
         return true;
     }
 

@@ -7,6 +7,7 @@ package com.hp.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hp.autonomy.frontend.configuration.validation.OptionalConfigurationComponent;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public abstract class AbstractConfig<T extends AbstractConfig<T>> implements Con
         while (iterator.hasNext()) {
             final Map.Entry<String, OptionalConfigurationComponent<?>> entry = iterator.next();
 
-            if (!entry.getValue().isEnabled()) {
+            if (BooleanUtils.isFalse(entry.getValue().getEnabled())) {
                 iterator.remove();
             }
         }

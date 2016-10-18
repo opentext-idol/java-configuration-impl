@@ -55,7 +55,7 @@ public class ValidationServiceImplTest {
     private static class ElvisConfiguration implements OptionalConfigurationComponent<ElvisConfiguration> {
 
         @Override
-        public boolean isEnabled() {
+        public Boolean getEnabled() {
             return true;
         }
 
@@ -86,7 +86,7 @@ public class ValidationServiceImplTest {
     private static class CakeConfiguration implements OptionalConfigurationComponent<CakeConfiguration> {
 
         @Override
-        public boolean isEnabled() {
+        public Boolean getEnabled() {
             return true;
         }
 
