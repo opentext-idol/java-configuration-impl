@@ -6,7 +6,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -69,7 +69,7 @@ public class ConfigurationUtils {
      */
     public static <K, V> Map<K, V> mergeMap(final Map<K, V> localValue, final Map<K, V> defaultValue) {
         return Optional.ofNullable(localValue).map(v -> Optional.ofNullable(defaultValue).map(w -> {
-            final Map<K, V> map = new HashMap<>(w);
+            final Map<K, V> map = new LinkedHashMap<>(w);
             map.putAll(v);
             return map;
         }).orElse(localValue)).orElse(defaultValue);
