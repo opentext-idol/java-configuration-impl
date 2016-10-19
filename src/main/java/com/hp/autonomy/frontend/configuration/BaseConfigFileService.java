@@ -152,7 +152,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public T getConfig() {
@@ -314,7 +314,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
      * Called after the Config is initialised
      *
      * @param config The newly initialised config
-     * @throws Exception
+     * @throws Exception any error
      */
     public abstract void postInitialise(final T config) throws Exception;
 

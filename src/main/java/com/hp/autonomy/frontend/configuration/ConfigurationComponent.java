@@ -23,6 +23,7 @@ public interface ConfigurationComponent<C extends ConfigurationComponent<C>> {
      * Perform a basic validation of the internals of this Config.  This method should not rely on
      * external services.
      *
+     * @param section the section to specify if a config exception is thrown if no section should be specified locally
      * @throws ConfigException If validation fails.
      */
     void basicValidate(String section) throws ConfigException;

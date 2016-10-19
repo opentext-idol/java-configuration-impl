@@ -47,10 +47,12 @@ public class RedisConfig extends SimpleComponent<RedisConfig> {
      * Validates the configuration
      *
      * @throws ConfigException If either:
+     *                         <ul>
      *                         <li>address is non null and invalid</li>
      *                         <li>address is null and sentinels is null or empty </li>
      *                         <li>sentinels is non null and non empty and masterName is null or blank</li>
      *                         <li>any sentinels are invalid</li>
+     *                         </ul>
      */
     @Override
     public void basicValidate(final String section) throws ConfigException {

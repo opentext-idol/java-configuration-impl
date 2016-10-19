@@ -20,12 +20,14 @@ public interface PasswordsConfig<T> {
     T withoutPasswords();
 
     /**
+     * @param encryptor object responsible for password encryption
      * @return A copy of this config with passwords encrypted by the supplied {@link TextEncryptor},
      * or this if the config has no passwords
      */
     T withEncryptedPasswords(TextEncryptor encryptor);
 
     /**
+     * @param encryptor object responsible for password encryption
      * @return A copy of this config with passwords decrypted by the supplied {@link TextEncryptor},
      * or this if the config has no passwords
      */
