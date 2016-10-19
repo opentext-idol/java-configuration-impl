@@ -1,0 +1,16 @@
+{
+  "masterName": "MASTER",
+  "password": "open sesame",
+  "address": {
+    "host": "localhost",
+    "port": 1234
+  },
+  "sentinels": [{
+    "host": "localhost",
+    "port": 5678
+  }, {
+    "host": "localhost",
+    "port": 91011
+  }],
+  "autoConfigure": true
+}

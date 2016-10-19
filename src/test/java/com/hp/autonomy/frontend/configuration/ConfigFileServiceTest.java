@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -96,7 +95,7 @@ public class ConfigFileServiceTest {
         assertNotNull(sampleConfig);
         assertNotNull(sampleConfig.getSomeField());
         assertNotNull(sampleConfig.getSomeNewField());
-        assertNotNull(sampleConfig.getSomeObject());
-        assertEquals("y", sampleConfig.getSomeObject().getSomeNestedField());
+        assertNotNull(sampleConfig.getSomeComponent());
+        assertEquals("y", sampleConfig.getSomeComponent().getSomeNestedField());
     }
 }

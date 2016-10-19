@@ -1,0 +1,15 @@
+{
+    "authentication": {
+        "method": "cas",
+        "cas": {
+            "casServerLoginUrl": "loginUrl",
+            "casServerUrlPrefix": "prefix",
+            "serverName": "serverName"
+        },
+        "defaultLogin": {
+            "username": "admin",
+            "password": "password"
+        },
+        "name": "CasAuthentication"
+    }
+}

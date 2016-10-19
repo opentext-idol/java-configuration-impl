@@ -1,79 +1,49 @@
 package com.hp.autonomy.frontend.configuration.test;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.Config;
-import com.hp.autonomy.frontend.configuration.ConfigException;
-import com.hp.autonomy.frontend.configuration.ConfigurationComponent;
-import org.apache.commons.lang.StringUtils;
+import com.hp.autonomy.frontend.configuration.SimpleComponent;
+import com.hp.autonomy.frontend.configuration.validation.OptionalConfigurationComponent;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.Map;
 
 @SuppressWarnings("unused")
-public class SampleConfig implements Config<SampleConfig> {
+@Getter
+@Builder
+@JsonDeserialize(builder = SampleConfig.SampleConfigBuilder.class)
+public class SampleConfig extends SimpleComponent<SampleConfig> implements Config<SampleConfig> {
     private String someField;
     private String someNewField;
-    private SomeObject someObject;
+    private SomeComponent someComponent;
 
     @Override
-    public Map<String, ConfigurationComponent> getValidationMap() {
+    public Map<String, OptionalConfigurationComponent<?>> getValidationMap() {
         return null;
     }
 
     @Override
-    public Map<String, ConfigurationComponent> getEnabledValidationMap() {
+    public Map<String, OptionalConfigurationComponent<?>> getEnabledValidationMap() {
         return null;
     }
 
-    @Override
-    public void basicValidate() throws ConfigException {
-
+    @SuppressWarnings("WeakerAccess")
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class SampleConfigBuilder {
     }
 
-    @Override
-    public SampleConfig merge(final SampleConfig other) {
-        someField = StringUtils.defaultIfEmpty(someField, other.someField);
-        someNewField = StringUtils.defaultIfEmpty(someNewField, other.someNewField);
-        if (someObject == null) {
-            someObject = new SomeObject();
-        }
-        someObject.someNestedField = StringUtils.defaultIfEmpty(someObject.someNestedField, other.someObject.someNestedField);
-
-        return this;
-    }
-
-    public String getSomeField() {
-        return someField;
-    }
-
-    public void setSomeField(final String someField) {
-        this.someField = someField;
-    }
-
-    public String getSomeNewField() {
-        return someNewField;
-    }
-
-    public void setSomeNewField(final String someNewField) {
-        this.someNewField = someNewField;
-    }
-
-    public SomeObject getSomeObject() {
-        return someObject;
-    }
-
-    public void setSomeObject(final SomeObject someObject) {
-        this.someObject = someObject;
-    }
-
-    @SuppressWarnings("InnerClassTooDeeplyNested")
-    public static class SomeObject {
+    @SuppressWarnings({"InnerClassTooDeeplyNested", "WeakerAccess"})
+    @Getter
+    @Builder
+    @JsonDeserialize(builder = SomeComponent.SomeComponentBuilder.class)
+    public static class SomeComponent extends SimpleComponent<SomeComponent> {
         private String someNestedField;
 
-        public String getSomeNestedField() {
-            return someNestedField;
-        }
-
-        public void setSomeNestedField(final String someNestedField) {
-            this.someNestedField = someNestedField;
+        @SuppressWarnings("WeakerAccess")
+        @JsonPOJOBuilder(withPrefix = "")
+        public static class SomeComponentBuilder {
         }
     }
 }
