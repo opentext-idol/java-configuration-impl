@@ -42,4 +42,8 @@ public class UsernameAndPasswordTest extends ConfigurationComponentTest<Username
         mergedComponent.assertThat().hasFieldOrPropertyWithValue("username", "Getafix");
         mergedComponent.assertThat().hasFieldOrPropertyWithValue("password", "Abracadabra");
     }
+
+    @Override
+    protected void validateString(final String objectAsString) {
+    }
 }

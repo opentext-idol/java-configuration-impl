@@ -13,6 +13,7 @@ import java.io.IOException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class RedisConfigTest extends ConfigurationComponentTest<RedisConfig> {
     @Test(expected = ConfigException.class)
@@ -80,5 +81,10 @@ public class RedisConfigTest extends ConfigurationComponentTest<RedisConfig> {
     protected void validateMergedComponent(final ObjectContent<RedisConfig> mergedComponent) {
         assertNotNull(mergedComponent.getObject().getAddress());
         assertThat(mergedComponent.getObject().getSentinels(), hasSize(1));
+    }
+
+    @Override
+    protected void validateString(final String objectAsString) {
+        assertTrue(objectAsString.contains("masterName"));
     }
 }

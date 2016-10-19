@@ -11,6 +11,7 @@ import com.hp.autonomy.frontend.configuration.ConfigException;
 import com.hp.autonomy.frontend.configuration.SimpleComponent;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -20,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 @JsonDeserialize(builder = CasConfig.CasConfigBuilder.class)
 @Getter
 @Builder
+@ToString
 public class CasConfig extends SimpleComponent<CasConfig> {
     private final String casServerLoginUrl;
     private final String casServerUrlPrefix;

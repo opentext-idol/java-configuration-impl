@@ -9,6 +9,8 @@ import org.springframework.boot.test.json.ObjectContent;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertTrue;
+
 public class CasConfigTest extends ConfigurationComponentTest<CasConfig> {
     @Test(expected = ConfigException.class)
     public void badConfig() throws ConfigException {
@@ -56,5 +58,10 @@ public class CasConfigTest extends ConfigurationComponentTest<CasConfig> {
         mergedComponent.assertThat().hasFieldOrPropertyWithValue("casServerLoginUrl", "/login");
         mergedComponent.assertThat().hasFieldOrPropertyWithValue("casServerUrlPrefix", "prefix");
         mergedComponent.assertThat().hasFieldOrPropertyWithValue("serverName", "MASTER");
+    }
+
+    @Override
+    protected void validateString(final String objectAsString) {
+        assertTrue(objectAsString.contains("serverName"));
     }
 }

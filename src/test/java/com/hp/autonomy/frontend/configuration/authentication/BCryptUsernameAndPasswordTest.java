@@ -100,4 +100,8 @@ public class BCryptUsernameAndPasswordTest extends ConfigurationComponentTest<BC
         mergedComponent.assertThat().hasFieldOrPropertyWithValue("hashedPassword", "XYZ");
         mergedComponent.assertThat().hasFieldOrPropertyWithValue("passwordRedacted", false);
     }
+
+    @Override
+    protected void validateString(final String objectAsString) {
+    }
 }

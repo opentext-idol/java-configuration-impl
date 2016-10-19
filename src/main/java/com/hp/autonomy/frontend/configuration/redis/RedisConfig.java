@@ -13,6 +13,7 @@ import com.hp.autonomy.frontend.configuration.server.HostAndPort;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
+import lombok.ToString;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
@@ -23,6 +24,7 @@ import java.util.Collection;
 @SuppressWarnings({"WeakerAccess", "InstanceVariableOfConcreteClass", "MismatchedQueryAndUpdateOfCollection"})
 @Getter
 @Builder
+@ToString
 @JsonDeserialize(builder = RedisConfig.RedisConfigBuilder.class)
 public class RedisConfig extends SimpleComponent<RedisConfig> {
     private static final String CONFIG_SECTION = "redis";

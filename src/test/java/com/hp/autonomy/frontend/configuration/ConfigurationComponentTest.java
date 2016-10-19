@@ -73,6 +73,13 @@ public abstract class ConfigurationComponentTest<C extends ConfigurationComponen
      */
     protected abstract void validateMergedComponent(final ObjectContent<C> mergedComponent);
 
+    /**
+     * Validation to perform on the String representation of the object
+     *
+     * @param objectAsString the object as a String
+     */
+    protected abstract void validateString(final String objectAsString);
+
     @Test
     public void toJson() throws IOException {
         final C component = constructComponent();
@@ -115,5 +122,10 @@ public abstract class ConfigurationComponentTest<C extends ConfigurationComponen
     public void validateGoodConfig() throws ConfigException {
         final C component = constructComponent();
         component.basicValidate("configSection");
+    }
+
+    @Test
+    public void toStringTest() {
+        validateString(constructComponent().toString());
     }
 }

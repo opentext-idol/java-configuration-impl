@@ -22,11 +22,6 @@ public class HostAndPortTest extends ConfigurationComponentTest<HostAndPort> {
         new HostAndPort(null, 8080).basicValidate(null);
     }
 
-    @Test
-    public void toStringTest() {
-        assertEquals("example.com:8080", constructComponent().toString());
-    }
-
     @Override
     protected Class<HostAndPort> getType() {
         return HostAndPort.class;
@@ -60,5 +55,10 @@ public class HostAndPortTest extends ConfigurationComponentTest<HostAndPort> {
     protected void validateMergedComponent(final ObjectContent<HostAndPort> mergedComponent) {
         mergedComponent.assertThat().hasFieldOrPropertyWithValue("host", "example.com");
         mergedComponent.assertThat().hasFieldOrPropertyWithValue("port", 8080);
+    }
+
+    @Override
+    protected void validateString(final String objectAsString) {
+        assertEquals("example.com:8080", objectAsString);
     }
 }

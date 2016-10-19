@@ -71,4 +71,8 @@ public class SingleUserAuthenticationTest extends ConfigurationComponentTest<Tes
         assertThat(authentication.getDefaultLogin().getUsername(), is("admin"));
         assertNotNull(authentication.getDefaultLogin().getPassword());
     }
+
+    @Override
+    protected void validateString(final String objectAsString) {
+    }
 }

@@ -76,4 +76,8 @@ public class CasAuthenticationTest extends ConfigurationComponentTest<TestConfig
         assertThat(cas.getCasServerUrlPrefix(), is("prefix"));
         assertThat(cas.getServerName(), is("test-server"));
     }
+
+    @Override
+    protected void validateString(final String objectAsString) {
+    }
 }
