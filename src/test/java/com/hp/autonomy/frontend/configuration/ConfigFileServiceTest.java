@@ -11,13 +11,22 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("ProhibitedExceptionDeclared")
 public class ConfigFileServiceTest {
     private static final String TEST_DIR = "./target/test";
     private static final String CONFIG_FILE_SYSTEM_PROPERTY = "some.property";
+    private static final String DEPRECATED_CONFIG_FILE_SYSTEM_PROPERTY = "some.deprecated.property";
     private static final String CONFIG_FILE_NAME = "sampleConfig.json";
     private static final String DEFAULT_CONFIG_FILE_NAME = "/defaultSampleConfig.json";
 
@@ -97,5 +106,17 @@ public class ConfigFileServiceTest {
         assertNotNull(sampleConfig.getSomeNewField());
         assertNotNull(sampleConfig.getSomeComponent());
         assertEquals("y", sampleConfig.getSomeComponent().getSomeNestedField());
+    }
+
+    @Test
+    public void deprecatedPropertyHandling() throws Exception {
+        System.clearProperty(CONFIG_FILE_SYSTEM_PROPERTY);
+        System.setProperty(DEPRECATED_CONFIG_FILE_SYSTEM_PROPERTY, TEST_DIR);
+
+        configFileService.setDeprecatedConfigFileLocations(Collections.singletonList(DEPRECATED_CONFIG_FILE_SYSTEM_PROPERTY));
+        configFileService.init();
+
+        final SampleConfig sampleConfig = configFileService.getConfig();
+        assertThat(sampleConfig, is(not(nullValue())));
     }
 }
