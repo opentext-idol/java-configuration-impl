@@ -28,6 +28,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -49,6 +51,7 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 
     private String configFileLocation;
     private String configFileName;
+    private List<String> deprecatedConfigFileLocations = Collections.emptyList();
 
     private String defaultConfigFile;
 
@@ -142,13 +145,34 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
 
     protected String getConfigFileLocation() {
         if (configFileLocation != null) {
-            final String propertyValue = System.getProperty(configFileLocation);
+            final String propertyValue = getConfigFilePath(configFileLocation);
+
             if (propertyValue != null) {
-                return propertyValue + (propertyValue.matches(".*(?:/|\\\\)$") ? configFileName : File.separator + configFileName);
+                return propertyValue;
+            }
+
+            for (final String deprecatedConfigFileLocation : deprecatedConfigFileLocations) {
+                final String deprecatedPropertyValue = getConfigFilePath(deprecatedConfigFileLocation);
+
+                if (deprecatedPropertyValue != null) {
+                    log.warn("The system property {} is deprecated, please migrate to {}", deprecatedConfigFileLocation, configFileLocation);
+
+                    return deprecatedPropertyValue;
+                }
             }
         }
 
         throw new IllegalStateException("No configuration file defined. System property key: " + configFileLocation);
+    }
+
+    private String getConfigFilePath(final String configFileLocation) {
+        final String propertyValue = System.getProperty(configFileLocation);
+
+        if (propertyValue != null) {
+            return propertyValue + (propertyValue.matches(".*(?:/|\\\\)$") ? configFileName : File.separator + configFileName);
+        }
+
+        return null;
     }
 
     /**
@@ -260,6 +284,13 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
      */
     public void setConfigFileLocation(final String systemProperty) {
         configFileLocation = systemProperty;
+    }
+
+    /**
+     * @param deprecatedConfigFileLocations Previously used system properties which are now deprecated
+     */
+    public void setDeprecatedConfigFileLocations(final List<String> deprecatedConfigFileLocations) {
+        this.deprecatedConfigFileLocations = deprecatedConfigFileLocations;
     }
 
     /**
