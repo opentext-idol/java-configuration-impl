@@ -82,25 +82,24 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
         T fileConfig = getEmptyConfig();
 
         boolean fileExists = false;
-        if (StringUtils.isNotBlank(configFileLocation)) {
-            log.debug("Using {} as config file location", configFileLocation);
 
-            try (Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(configFileLocation), "UTF-8"))) {
-                fileConfig = mapper.readValue(reader, getConfigClass());
+        log.info("Using {} as config file location", configFileLocation);
 
-                if (fileConfig instanceof PasswordsConfig<?>) {
-                    fileConfig = ((PasswordsConfig<T>) fileConfig).withDecryptedPasswords(textEncryptor);
-                }
+        try (Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(configFileLocation), "UTF-8"))) {
+            fileConfig = mapper.readValue(reader, getConfigClass());
 
-                fileExists = true;
-            } catch (final FileNotFoundException e) {
-                log.warn("Config file not found, using empty configuration object");
-            } catch (final IOException e) {
-                log.error("Error reading config file at {}", configFileLocation);
-                log.error("Recording stack trace", e);
-                // throw this so we don't continue to start the webapp
-                throw new IllegalStateException("Could not initialize configuration", e);
+            if (fileConfig instanceof PasswordsConfig<?>) {
+                fileConfig = ((PasswordsConfig<T>) fileConfig).withDecryptedPasswords(textEncryptor);
             }
+
+            fileExists = true;
+        } catch (final FileNotFoundException e) {
+            log.warn("Config file not found, using empty configuration object");
+        } catch (final IOException e) {
+            log.error("Error reading config file at {}", configFileLocation);
+            log.error("Recording stack trace", e);
+            // throw this so we don't continue to start the webapp
+            throw new IllegalStateException("Could not initialize configuration", e);
         }
 
         if (StringUtils.isNotBlank(defaultConfigFile)) {
@@ -134,13 +133,8 @@ public abstract class BaseConfigFileService<T extends Config<T>> implements Conf
             throw new IllegalStateException("Could not initialize configuration", e);
         }
 
-        if (fileConfig.equals(getEmptyConfig())) {
-            log.info("Cannot read value from {}", configFileLocation);
-            log.debug("Environment is {}", System.getenv());
-        } else {
-            config.set(fileConfig);
-            postInitialise(getConfig());
-        }
+        config.set(fileConfig);
+        postInitialise(getConfig());
     }
 
     protected String getConfigFileLocation() {
