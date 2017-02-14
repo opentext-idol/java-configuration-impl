@@ -6,6 +6,7 @@
 package com.hp.autonomy.frontend.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hp.autonomy.frontend.configuration.validation.OptionalConfigurationComponent;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -41,7 +42,17 @@ public abstract class AbstractConfig<T extends AbstractConfig<T>> implements Con
 
                 // if o is null this is false
                 if (o instanceof OptionalConfigurationComponent) {
-                    result.put(field.getName(), (OptionalConfigurationComponent<?>) o);
+                    final JsonProperty ann = field.getAnnotation(JsonProperty.class);
+                    final String key;
+
+                    if (ann != null) {
+                        key = ann.value();
+                    }
+                    else {
+                        key = field.getName();
+                    }
+
+                    result.put(key, (OptionalConfigurationComponent<?>) o);
                 }
             } catch (final IllegalAccessException e) {
                 throw new AssertionError("Your JVM does not allow you to run this code.", e);
