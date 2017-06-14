@@ -3,6 +3,7 @@ package com.hp.autonomy.frontend.configuration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Singular;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,9 +11,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
@@ -161,6 +164,21 @@ public class ConfigurationUtilsTest<C extends ConfigurationComponent<C>> {
         verify(subComponent).merge(any());
     }
 
+    @Test
+    public void defaultMergeWithSingularList() {
+        final SingularListTestObject object1 = SingularListTestObject.builder()
+                .value("cat")
+                .value("dog")
+                .build();
+
+        final SingularListTestObject object2 = SingularListTestObject.builder()
+                .value("budgie")
+                .build();
+
+        assertThat(object1.merge(object2).getValues(), contains("cat", "dog"));
+        assertThat(object2.merge(object1).getValues(), contains("budgie"));
+    }
+
     @Test(expected = ConfigurationUtils.ConfigRuntimeException.class)
     public void invalidDefaultMerge() {
         ConfigurationUtils.defaultMerge(new BadObject(null, null, false), new BadObject(null, null, false));
@@ -180,6 +198,13 @@ public class ConfigurationUtilsTest<C extends ConfigurationComponent<C>> {
     @Test(expected = ConfigException.class)
     public void invalidDefaultValidate() throws ConfigException {
         ConfigurationUtils.defaultValidate(new AnotherBadObject(), null);
+    }
+
+    @Getter
+    @Builder
+    private static class SingularListTestObject extends SimpleComponent<SingularListTestObject> {
+        @Singular
+        private final List<String> values;
     }
 
     @Getter
