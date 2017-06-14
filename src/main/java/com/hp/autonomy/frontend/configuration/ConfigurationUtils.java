@@ -6,9 +6,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -142,7 +140,7 @@ public class ConfigurationUtils {
                 final Object defaultValue = getter.invoke(defaults);
                 @SuppressWarnings({"unchecked", "rawtypes"})
                 final Object mergedValue = mergeProperty((Class) propertyType, localValue, defaultValue);
-                final Optional<Method> maybeSetter = getMethod(builderType, propertyName, propertyType);
+                final Optional<Method> maybeSetter = getSetter(builderType, propertyName, propertyType);
                 if (maybeSetter.isPresent()) {
                     maybeSetter.get().invoke(builder, mergedValue);
                 }
@@ -175,15 +173,32 @@ public class ConfigurationUtils {
         return mergeFunction;
     }
 
-    private static Optional<Method> getMethod(final Class<?> builderType, final String methodName, final Class<?>... parameterTypes) {
-        Optional<Method> maybeMethod;
-        try {
-            maybeMethod = Optional.of(builderType.getMethod(methodName, parameterTypes));
-        } catch (final NoSuchMethodException ignored) {
-            maybeMethod = Optional.empty();
+    private static Optional<Method> getSetter(final Class<?> builderType, final String methodName, final Class<?> declaredPropertyType) {
+        Class<?> currentType = declaredPropertyType;
+        Method method = null;
+
+        /*
+         * Check every type that the property is assignable to in case the setter method declares a more general type.
+         * For example, @Singular fields can have type List, but the generated builder method will have type Collection.
+         */
+        while (currentType != null && method == null) {
+            final Collection<Class<?>> parameterTypes = new LinkedList<>();
+            parameterTypes.add(currentType);
+            Collections.addAll(parameterTypes, currentType.getInterfaces());
+
+            for (final Class<?> type : parameterTypes) {
+                try {
+                    method = builderType.getMethod(methodName, type);
+                    break;
+                } catch (final NoSuchMethodException ignored) {
+                    // Continue loop if no method found
+                }
+            }
+
+            currentType = currentType.getSuperclass();
         }
 
-        return maybeMethod;
+        return Optional.ofNullable(method);
     }
 
     static class ConfigRuntimeException extends RuntimeException {
