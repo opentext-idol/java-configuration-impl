@@ -12,12 +12,12 @@ script: mvn deploy --settings settings.xml -Prelease
 env:
   global:
   # SONATYPE_USERNAME
-  - secure: NX4CP8+uyxhnycPIcoDtg5N71eWjgG6xCsEO8dPPzuKe7V+t+u+INdp0Iyc4+xbMZUlWroBBG2FFkNcLtFGCSHujCn6dYn2I4n95Iz+P+is0JTevnEARu/c1tIC/crWjIRnQ5xnLp94rB1Tw2a3FQ+zdd/9ivRFIi9l+NyP/d90=
+  - secure: hsyIdky6EoCW/tUDbJuX6wvo5XXSDml1SQRNHrCGIDgiA6+lkZAzhQPzWgXWclwIQ+u4jf7RrF6Pyun78NPCOpPIfloClhmL1LU36D/dsbgpmFHS+98aelfHh+9M2rEy3hVx3dc+WqjqGk3XXDywyivdPsP2M9uBMD1FnblnO+4=
   # SONATYPE_PASSWORD
-  - secure: F7d9c9knZ+8CvwthQ0f3zifu5PunABGX5VmZdkDsK4C/mUrvbRLti/X3sL73PF5xD/hCeGYgQfRCQZ3AcpDyP/7rB4dtKsUhAxdfAriUFqREv4gUbfZ/SBXGonYQqXmakflKmMn29+ct8Uq5WP29W82sIkUsB2fJkb4NvAa/l7s=
+  - secure: QXY+UGzkHxAKejekMw6i69XATGlMQhBBzLyCFVN5vdzVk85fqv9osD8yldJeihFeU7TxCJLkXOuotcgAVJmnvWAnElQA9cPXtvFa5C4/+N4BEJHqKpc+dSZ2Nvshq22Yfk460p1JPh/2p7789boa+033WJbT6bQQPU6N5HtpEwA=
   # GPG_PASSPHRASE
-  - secure: DQG49bOk0+IfzWFeipgZ1S3RHUWjxarZCdMiDZSOZ0AJ9tRfPODIQM5Uv3hD1KBj2vlCvgWoLUeNw6085xMHLyihoTnAt2akEAyavIXpt6LZob32T34iUsFeofoT+dDphkZ1D4l9c4rHs2jti+rfDauxf6yltpdsWOIacpnfgkA=
+  - secure: dk8UptF5LGNLjpJxjqz//fbLqWgQTOmGFWQ/9j5yASCa2V3TAr++ckI8Iin23rogj1lcKcRIn/0j/vafisO6t/jfXeh1fVRhuAO8dwVIWfLAd+S2i/kFz5GPQkt8DAixKfi5DKSPNGAJFcG5D08luq8JZ3qvDg7nCVOgXH5ao8I=
   # GPG_KEYID
-  - secure: CIYvdF/JUg3juXyNx0kh93wwk0YricZtkPz5qTfnaFdMdbVHdLR1axpNX5CkZZVtpypLH8g4kyOkr3QlYEukdBftcyyaeRCAH6ak1sASoDyY8jXpQgdNTzrlm7g0YJyg7XDwZqSBtJ8mhvb3d7b6g2YdcCJQGi9Mh6VIKwGoNpI=
+  - GPG_KEYID: 0DD20E21
   # GPG_KEY
-  - secure: DB2OMkXXFhc0eO3+jpjrh1j5NOYf7/PFunE0fO5gtQOCN7VUMM8guOXe5lZtA/H0jS2vTmU/SDQQDkwFS8vfio/f8IL9pOZleqKzCHkPPEfb/5pnga3xhgQtjy8nmo1cstE7eASvRyN3n5kdHQFVVtS88zYwcrAJbBRdFUOjmQM=
+  - secure: OWNBi3kBddmFANHe3ss79TaVAqi7l/kUXLf4tt5czBL96Aocfp0Pi4cgWwf302kysGhrn6nbhhFYf6iUjPp9xgDZe6KV9s2ncmFX3AbaHPhk7CscNBWnbVYS4p3YsGl5rixbgYxnXpXQVcIhCEz+fokYwX1XV5EAE5BNT+XhH/0=
