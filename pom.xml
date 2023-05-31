@@ -17,14 +17,14 @@
     <inceptionYear>2013</inceptionYear>
 
     <scm>
-        <connection>scm:git:git@github.com:microfocus-idol/java-configuration-impl.git</connection>
-        <developerConnection>scm:git:git@github.com:microfocus-idol/java-configuration-impl.git</developerConnection>
-        <url>git@github.com:microfocus-idol/java-configuration-impl.git</url>
+        <connection>scm:git:git@github.com:opentext-idol/java-configuration-impl.git</connection>
+        <developerConnection>scm:git:git@github.com:opentext-idol/java-configuration-impl.git</developerConnection>
+        <url>git@github.com:opentext-idol/java-configuration-impl.git</url>
     </scm>
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/microfocus-idol/java-configuration-impl/issues</url>
+        <url>https://github.com/opentext-idol/java-configuration-impl/issues</url>
     </issueManagement>
 
     <build>
