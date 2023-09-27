@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,8 +20,6 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -191,8 +189,8 @@ public class ConfigurationUtilsTest<C extends ConfigurationComponent<C>> {
                 .simple(true)
                 .subComponent(subComponent)
                 .build();
-        ConfigurationUtils.defaultValidate(local, null);
-        verify(subComponent).basicValidate(anyString());
+        ConfigurationUtils.defaultValidate(local, "section");
+        verify(subComponent).basicValidate("section");
     }
 
     @Test(expected = ConfigException.class)

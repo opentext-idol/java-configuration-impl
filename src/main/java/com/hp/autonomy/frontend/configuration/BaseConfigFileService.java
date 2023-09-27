@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jasypt.util.text.TextEncryptor;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;

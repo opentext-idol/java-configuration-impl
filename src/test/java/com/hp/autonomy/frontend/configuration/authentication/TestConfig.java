@@ -14,12 +14,15 @@
 
 package com.hp.autonomy.frontend.configuration.authentication;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.SimpleComponent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @SuppressWarnings("WeakerAccess")
 @Builder
+@JsonDeserialize(builder = TestConfig.TestConfigBuilder.class)
 @AllArgsConstructor
 public class TestConfig extends SimpleComponent<TestConfig> implements AuthenticationConfig<TestConfig> {
     private final Authentication<?> authentication;
@@ -43,4 +46,7 @@ public class TestConfig extends SimpleComponent<TestConfig> implements Authentic
     public TestConfig withoutDefaultLogin() {
         return null;
     }
+
+    @JsonPOJOBuilder(withPrefix="")
+    public static class TestConfigBuilder { }
 }

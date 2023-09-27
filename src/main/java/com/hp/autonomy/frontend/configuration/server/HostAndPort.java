@@ -14,6 +14,8 @@
 
 package com.hp.autonomy.frontend.configuration.server;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.ConfigException;
 import com.hp.autonomy.frontend.configuration.SimpleComponent;
 import lombok.AllArgsConstructor;
@@ -28,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 @SuppressWarnings({"WeakerAccess", "DefaultAnnotationParam"})
 @Getter
 @Builder
+@JsonDeserialize(builder = HostAndPort.HostAndPortBuilder.class)
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class HostAndPort extends SimpleComponent<HostAndPort> {
@@ -52,4 +55,7 @@ public class HostAndPort extends SimpleComponent<HostAndPort> {
     public String toString() {
         return host + ':' + port;
     }
+
+    @JsonPOJOBuilder(withPrefix="")
+    public static class HostAndPortBuilder { }
 }
