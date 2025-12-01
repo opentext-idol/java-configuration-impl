@@ -21,7 +21,7 @@ import com.hp.autonomy.frontend.configuration.validation.ConfigValidationExcepti
 import com.hp.autonomy.frontend.configuration.validation.ValidationResults;
 import com.hp.autonomy.frontend.configuration.validation.ValidationService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jasypt.util.text.TextEncryptor;
 
 import jakarta.annotation.PostConstruct;

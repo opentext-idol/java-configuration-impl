@@ -17,7 +17,7 @@ package com.hp.autonomy.frontend.configuration;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hp.autonomy.frontend.configuration.validation.OptionalConfigurationComponent;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

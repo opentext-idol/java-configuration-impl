@@ -21,7 +21,7 @@ import com.hp.autonomy.frontend.configuration.SimpleComponent;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Configuration object for CAS SSO.
