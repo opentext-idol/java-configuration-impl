@@ -23,7 +23,7 @@ import com.hp.autonomy.frontend.configuration.validation.ValidationResult;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**

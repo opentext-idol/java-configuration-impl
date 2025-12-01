@@ -14,7 +14,7 @@
 
 package com.hp.autonomy.frontend.configuration.authentication;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 @SuppressWarnings("UtilityClass")
 class DefaultLogin {
