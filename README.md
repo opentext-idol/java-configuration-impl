@@ -2,8 +2,6 @@
 
 Default implementation of the OpenText IDOL Configuration API.  Contains a service for storing configuration in a file, and services for validation.
 
-This repo uses git-flow. develop is the development branch. master is the last known good branch.
-
 ## License
 
 Copyright 2013-2020 OpenText or one of its affiliates.
