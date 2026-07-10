@@ -1,12 +1,12 @@
 package com.hp.autonomy.frontend.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.json.ObjectContent;
 import org.springframework.core.ResolvableType;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 
@@ -24,7 +24,7 @@ public abstract class ConfigurationComponentTest<C extends ConfigurationComponen
 
     @Before
     public void setUp() {
-        final ObjectMapper objectMapper = new ObjectMapper();
+        final JsonMapper objectMapper = new JsonMapper();
         json = new JacksonTester<>(getClass(), ResolvableType.forClass(getType()), objectMapper);
     }
 

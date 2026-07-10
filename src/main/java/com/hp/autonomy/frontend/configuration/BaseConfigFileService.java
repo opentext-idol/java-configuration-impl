@@ -14,29 +14,18 @@
 
 package com.hp.autonomy.frontend.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.hp.autonomy.frontend.configuration.passwords.PasswordsConfig;
 import com.hp.autonomy.frontend.configuration.validation.ConfigValidationException;
 import com.hp.autonomy.frontend.configuration.validation.ValidationResults;
 import com.hp.autonomy.frontend.configuration.validation.ValidationService;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jasypt.util.text.TextEncryptor;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ser.FilterProvider;
 
-import jakarta.annotation.PostConstruct;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;

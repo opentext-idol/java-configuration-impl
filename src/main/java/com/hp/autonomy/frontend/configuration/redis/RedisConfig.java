@@ -14,8 +14,6 @@
 
 package com.hp.autonomy.frontend.configuration.redis;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.ConfigException;
 import com.hp.autonomy.frontend.configuration.SimpleComponent;
 import com.hp.autonomy.frontend.configuration.server.HostAndPort;
@@ -24,6 +22,8 @@ import lombok.Getter;
 import lombok.Singular;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 import java.util.Collection;
 

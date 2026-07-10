@@ -14,12 +14,12 @@
 
 package com.hp.autonomy.frontend.configuration.authentication;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.SimpleComponent;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Configuration object representing a username and password combination

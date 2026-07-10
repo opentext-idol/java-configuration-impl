@@ -1,6 +1,5 @@
 package com.hp.autonomy.frontend.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hp.autonomy.frontend.configuration.test.SampleConfig;
 import com.hp.autonomy.frontend.configuration.test.SampleConfigFileService;
 import org.apache.commons.io.FileUtils;
@@ -8,6 +7,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,11 +16,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @SuppressWarnings("ProhibitedExceptionDeclared")
 public class ConfigFileServiceTest {

@@ -14,11 +14,11 @@
 
 package com.hp.autonomy.frontend.configuration.authentication;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.hp.autonomy.frontend.configuration.SimpleComponent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @SuppressWarnings("WeakerAccess")
 @Builder
